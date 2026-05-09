@@ -1,10 +1,27 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR" data-theme="dark">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0e0f13" />
+    <meta
+      name="description"
+      content="Rastreador de hábitos com sequências, mapa de calor anual e funcionamento offline."
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>react-habit-tracker</title>
+    <title>Hábitos — rastreador de hábitos</title>
+    <script>
+      // Apply the stored theme before the first paint to avoid a flash of the wrong theme.
+      try {
+        var stored = JSON.parse(localStorage.getItem('habitos:settings') || '{}')
+        var pref = (stored.state && stored.state.theme) || 'system'
+        var dark = window.matchMedia('(prefers-color-scheme: dark)').matches
+        var theme = pref === 'system' ? (dark ? 'dark' : 'light') : pref
+        document.documentElement.dataset.theme = theme
+      } catch (e) {
+        document.documentElement.dataset.theme = 'dark'
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

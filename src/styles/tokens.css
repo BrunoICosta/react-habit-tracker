@@ -1,0 +1,73 @@
+/*
+ * Design tokens. Dark is the default look; light is applied through `data-theme="light"`.
+ * The attribute always holds the resolved theme (the "system" option is resolved in JS).
+ */
+:root {
+  --font-sans:
+    'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-pill: 999px;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  --nav-height: 68px;
+  --header-height: 60px;
+  --content-max: 720px;
+
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+
+  color-scheme: dark;
+  --bg: #0e0f13;
+  --bg-elevated: #15171d;
+  --surface: #1b1e26;
+  --surface-2: #242833;
+  --border: #2c303c;
+  --text: #f2f3f7;
+  --text-muted: #a1a6b4;
+  --text-subtle: #7b8191;
+  --accent: #8b7bff;
+  --accent-strong: #a395ff;
+  --accent-contrast: #0e0f13;
+  --accent-soft: rgb(139 123 255 / 0.16);
+  --danger: #ff6b6b;
+  --danger-soft: rgb(255 107 107 / 0.14);
+  --success: #3ddc97;
+  --warning: #ffc861;
+  --focus-ring: 0 0 0 3px rgb(163 149 255 / 0.55);
+  --shadow-sm: 0 1px 2px rgb(0 0 0 / 0.4);
+  --shadow-lg: 0 18px 40px -12px rgb(0 0 0 / 0.6);
+  --heat-empty: #232732;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+  --bg: #f5f4f0;
+  --bg-elevated: #fbfaf7;
+  --surface: #ffffff;
+  --surface-2: #f0eee9;
+  --border: #e3e0d8;
+  --text: #17181c;
+  --text-muted: #5b5f6b;
+  --text-subtle: #6f7380;
+  --accent: #5b45e0;
+  --accent-strong: #4a35cc;
+  --accent-contrast: #ffffff;
+  --accent-soft: rgb(91 69 224 / 0.1);
+  --danger: #d43c3c;
+  --danger-soft: rgb(212 60 60 / 0.1);
+  --success: #12945e;
+  --warning: #a86a00;
+  --focus-ring: 0 0 0 3px rgb(91 69 224 / 0.4);
+  --shadow-sm: 0 1px 2px rgb(23 24 28 / 0.06);
+  --shadow-lg: 0 18px 40px -16px rgb(23 24 28 / 0.25);
+  --heat-empty: #ebe8e1;
+}
