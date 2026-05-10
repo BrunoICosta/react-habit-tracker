@@ -1,0 +1,41 @@
+import { Icon, type IconName } from '../../shared/components/Icon'
+import { PageHeader } from '../../shared/components/PageHeader'
+import { useSettingsStore, type ThemePreference } from '../../store/settingsStore'
+
+const THEME_OPTIONS: { value: ThemePreference; label: string; icon: IconName }[] = [
+  { value: 'system', label: 'Sistema', icon: 'monitor' },
+  { value: 'light', label: 'Claro', icon: 'sun' },
+  { value: 'dark', label: 'Escuro', icon: 'moon' },
+]
+
+export function SettingsPage() {
+  const theme = useSettingsStore((state) => state.theme)
+  const setTheme = useSettingsStore((state) => state.setTheme)
+
+  return (
+    <>
+      <PageHeader title="Ajustes" subtitle="Aparência e seus dados" />
+
+      <section className="card" aria-labelledby="theme-title">
+        <h2 id="theme-title" className="section__title">
+          Tema
+        </h2>
+        <div className="segmented" role="radiogroup" aria-labelledby="theme-title">
+          {THEME_OPTIONS.map((option) => (
+            <button
+              key={option.value}
+              type="button"
+              role="radio"
+              aria-checked={theme === option.value}
+              className="segmented__option"
+              onClick={() => setTheme(option.value)}
+            >
+              <Icon name={option.icon} size={18} />
+              {option.label}
+            </button>
+          ))}
+        </div>
+      </section>
+    </>
+  )
+}

@@ -1,11 +1,23 @@
 import { render, screen } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { beforeEach, describe, expect, it } from 'vitest'
 import { App } from './App'
 
 describe('App', () => {
-  it('renders the shell and applies the resolved theme', () => {
+  beforeEach(() => {
+    window.location.hash = ''
+  })
+
+  it('renders the navigation and applies the resolved theme', () => {
     render(<App />)
-    expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
+    const nav = screen.getByRole('navigation', { name: 'Navegação principal' })
+    expect(nav).toBeInTheDocument()
+    expect(screen.getByRole('link', { name: 'Hoje' })).toHaveAttribute('aria-current', 'page')
     expect(document.documentElement.dataset.theme).toBe('dark')
+  })
+
+  it('renders the not found page for unknown hashes', () => {
+    window.location.hash = '#/nada-aqui'
+    render(<App />)
+    expect(screen.getByRole('heading', { name: 'Página não encontrada' })).toBeInTheDocument()
   })
 })

@@ -1,23 +1,51 @@
 .app-shell {
   min-height: 100dvh;
-  display: flex;
-  flex-direction: column;
 }
 
 .app-main {
-  flex: 1;
   width: 100%;
   max-width: var(--content-max);
   margin: 0 auto;
-  padding: var(--space-6) var(--space-4) calc(var(--nav-height) + var(--space-8));
+  padding: calc(var(--space-6) + env(safe-area-inset-top)) var(--space-4)
+    calc(var(--nav-height) + var(--space-8) + env(safe-area-inset-bottom));
 }
 
-.app-title {
-  font-size: 1.75rem;
-  font-weight: 800;
+.app-main:focus {
+  outline: none;
 }
 
-.app-subtitle {
-  color: var(--text-muted);
-  margin-top: var(--space-1);
+.skip-link {
+  position: fixed;
+  top: var(--space-3);
+  left: var(--space-3);
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  color: var(--accent-contrast);
+  font-weight: 700;
+  transform: translateY(-200%);
+  transition: transform 0.2s ease;
+}
+
+.skip-link:focus {
+  transform: none;
+}
+
+@media (min-width: 600px) {
+  .app-main {
+    padding-left: var(--space-6);
+    padding-right: var(--space-6);
+  }
+}
+
+@media (min-width: 960px) {
+  .app-shell {
+    padding-left: 232px;
+  }
+
+  .app-main {
+    padding-top: var(--space-8);
+    padding-bottom: var(--space-8);
+  }
 }

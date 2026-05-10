@@ -1,0 +1,32 @@
+.page-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+}
+
+.page-header__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-header__title {
+  font-size: 1.7rem;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.page-header__subtitle {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.page-header__subtitle::first-letter {
+  text-transform: uppercase;
+}
+
+.page-header__actions {
+  display: flex;
+  gap: var(--space-2);
+}

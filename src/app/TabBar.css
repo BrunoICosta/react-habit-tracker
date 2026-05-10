@@ -1,0 +1,92 @@
+.tab-bar {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 20;
+  padding: var(--space-2) var(--space-3) calc(var(--space-2) + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--bg-elevated) 86%, transparent);
+  backdrop-filter: blur(18px) saturate(1.4);
+  -webkit-backdrop-filter: blur(18px) saturate(1.4);
+  border-top: 1px solid var(--border);
+}
+
+.tab-bar__brand {
+  display: none;
+}
+
+.tab-bar__list {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-1);
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+}
+
+.tab-bar__link {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: var(--space-2) var(--space-1);
+  border-radius: var(--radius-md);
+  color: var(--text-subtle);
+  font-size: 0.72rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.tab-bar__link > svg,
+.tab-bar__label {
+  position: relative;
+}
+
+.tab-bar__link:hover {
+  color: var(--text);
+}
+
+.tab-bar__link[aria-current='page'] {
+  color: var(--accent-strong);
+}
+
+.tab-bar__indicator {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--accent-soft);
+}
+
+/* Desktop: the tab bar becomes a side rail. */
+@media (min-width: 960px) {
+  .tab-bar {
+    inset: 0 auto 0 0;
+    width: 232px;
+    padding: var(--space-6) var(--space-4);
+    border-top: 0;
+    border-right: 1px solid var(--border);
+  }
+
+  .tab-bar__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0 var(--space-3) var(--space-8);
+    font-weight: 800;
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+  }
+
+  .tab-bar__list {
+    grid-template-columns: 1fr;
+    max-width: none;
+  }
+
+  .tab-bar__link {
+    flex-direction: row;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    font-size: 0.95rem;
+  }
+}
