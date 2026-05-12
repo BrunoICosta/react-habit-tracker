@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react'
+import { EditHabitPage, NewHabitPage } from '../features/habits/HabitFormPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
 import { EmptyState } from '../shared/components/EmptyState'
 import { PageHeader } from '../shared/components/PageHeader'
@@ -13,11 +14,22 @@ function renderRoute(route: Route) {
       return <SettingsPage />
     case 'today':
       return <PageHeader title="Hoje" />
-    case 'habits':
     case 'habit-new':
-    case 'habit-detail':
+      return <NewHabitPage />
     case 'habit-edit':
-      return <PageHeader title="Hábitos" />
+      return <EditHabitPage id={route.id} />
+    case 'habits':
+    case 'habit-detail':
+      return (
+        <PageHeader
+          title="Hábitos"
+          actions={
+            <a className="btn btn--primary" href={routeToHash({ name: 'habit-new' })}>
+              Novo hábito
+            </a>
+          }
+        />
+      )
     case 'stats':
       return <PageHeader title="Estatísticas" />
     case 'not-found':
