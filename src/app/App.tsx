@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'motion/react'
 import { EditHabitPage, NewHabitPage } from '../features/habits/HabitFormPage'
 import { HabitsPage } from '../features/habits/HabitsPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
+import { TodayPage } from '../features/today/TodayPage'
 import { EmptyState } from '../shared/components/EmptyState'
 import { PageHeader } from '../shared/components/PageHeader'
 import { useTheme } from '../shared/hooks/useTheme'
@@ -14,7 +15,7 @@ function renderRoute(route: Route) {
     case 'settings':
       return <SettingsPage />
     case 'today':
-      return <PageHeader title="Hoje" />
+      return <TodayPage />
     case 'habit-new':
       return <NewHabitPage />
     case 'habit-edit':

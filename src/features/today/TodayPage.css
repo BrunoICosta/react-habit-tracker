@@ -1,0 +1,46 @@
+.today-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+  background:
+    radial-gradient(120% 140% at 0% 0%, var(--accent-soft), transparent 60%), var(--surface);
+}
+
+.today-summary__percent {
+  font-weight: 800;
+  font-size: 1.05rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.today-summary__count {
+  font-size: 1.1rem;
+  color: var(--text-muted);
+}
+
+.today-summary__count strong {
+  color: var(--text);
+  font-size: 1.6rem;
+  font-weight: 800;
+}
+
+.today-summary__message {
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}
+
+.today-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.today-off {
+  margin-top: var(--space-5);
+  color: var(--text-subtle);
+  font-size: 0.88rem;
+  text-align: center;
+}
