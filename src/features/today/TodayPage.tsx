@@ -1,16 +1,18 @@
 import { format } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { AnimatePresence } from 'motion/react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { useShallow } from 'zustand/react/shallow'
 import { routeToHash } from '../../app/router'
 import { fromDateKey } from '../../core/dates'
 import { isDayDone, isScheduledOn } from '../../core/habit'
+import { Confetti } from '../../shared/components/Confetti'
 import { EmptyState } from '../../shared/components/EmptyState'
 import { Icon } from '../../shared/components/Icon'
 import { PageHeader } from '../../shared/components/PageHeader'
 import { ProgressRing } from '../../shared/components/ProgressRing'
 import { useToday } from '../../shared/hooks/useToday'
+import { createBurst, type Particle } from '../../shared/lib/confetti'
 import { selectActiveHabits, useHabitStore } from '../../store/habitStore'
 import { HabitCheckCard } from './HabitCheckCard'
 import './TodayPage.css'
@@ -27,6 +29,7 @@ export function TodayPage() {
   const today = useToday()
   const habits = useHabitStore(useShallow(selectActiveHabits))
   const logs = useHabitStore((state) => state.logs)
+  const [burst, setBurst] = useState<{ key: number; particles: Particle[] } | null>(null)
 
   const scheduled = useMemo(
     () => habits.filter((habit) => isScheduledOn(habit.frequency, today)),
@@ -38,6 +41,15 @@ export function TodayPage() {
   ).length
   const total = scheduled.length
   const ratio = total === 0 ? 0 : doneCount / total
+
+  // Event-driven (not an effect): only celebrate when a user action completes the day.
+  const handleChange = () => {
+    const { logs: nextLogs } = useHabitStore.getState()
+    const nowDone = scheduled.every((habit) => isDayDone(nextLogs[habit.id]?.[today], habit.target))
+    if (nowDone && doneCount < total) {
+      setBurst((current) => ({ key: (current?.key ?? 0) + 1, particles: createBurst() }))
+    }
+  }
 
   const subtitle = format(fromDateKey(today), "EEEE, d 'de' MMMM", { locale: ptBR })
   const newHabitHref = routeToHash({ name: 'habit-new' })
@@ -71,7 +83,12 @@ export function TodayPage() {
         </EmptyState>
       ) : (
         <>
-          <section className="today-summary card" aria-label="Progresso de hoje">
+          <section
+            className="today-summary card"
+            data-complete={total > 0 && doneCount === total}
+            aria-label="Progresso de hoje"
+          >
+            <Confetti burstKey={burst?.key ?? null} particles={burst?.particles ?? []} />
             <ProgressRing value={ratio} size={76} stroke={8}>
               <span className="today-summary__percent">{Math.round(ratio * 100)}%</span>
             </ProgressRing>
@@ -93,7 +110,12 @@ export function TodayPage() {
             <ul className="today-list" aria-label="Hábitos de hoje">
               <AnimatePresence initial={false}>
                 {scheduled.map((habit) => (
-                  <HabitCheckCard key={habit.id} habit={habit} day={today} />
+                  <HabitCheckCard
+                    key={habit.id}
+                    habit={habit}
+                    day={today}
+                    onChange={handleChange}
+                  />
                 ))}
               </AnimatePresence>
             </ul>

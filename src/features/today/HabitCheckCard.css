@@ -109,3 +109,66 @@
   background: var(--habit-color);
   box-shadow: 0 8px 22px -8px var(--habit-color);
 }
+
+.check-card__count {
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--habit-color) 20%, transparent);
+  color: var(--text);
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.check-card__undo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: var(--surface);
+  color: var(--text-muted);
+}
+
+.check-card__undo:hover {
+  color: var(--text);
+}
+
+.check-card__action {
+  position: relative;
+  flex-shrink: 0;
+}
+
+.check-card__pop {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  pointer-events: none;
+}
+
+.check-card__pop-dot {
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  width: 8px;
+  height: 8px;
+  border-radius: var(--radius-pill);
+  background: var(--habit-color);
+}
+
+.check-button[data-multi='true']:not([aria-pressed='true']) {
+  border-color: color-mix(in srgb, var(--habit-color) 30%, var(--border));
+  color: var(--habit-color);
+}
+
+.check-button__ring {
+  position: absolute;
+  inset: -2.5px;
+}
+
+.check-button__plus {
+  display: grid;
+  place-items: center;
+}
