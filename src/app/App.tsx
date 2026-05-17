@@ -2,9 +2,9 @@ import { AnimatePresence, motion } from 'motion/react'
 import { EditHabitPage, NewHabitPage } from '../features/habits/HabitFormPage'
 import { HabitsPage } from '../features/habits/HabitsPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
+import { StatsPage } from '../features/stats/StatsPage'
 import { TodayPage } from '../features/today/TodayPage'
 import { EmptyState } from '../shared/components/EmptyState'
-import { PageHeader } from '../shared/components/PageHeader'
 import { useTheme } from '../shared/hooks/useTheme'
 import { routeToHash, tabOf, useRoute, type Route } from './router'
 import { TabBar } from './TabBar'
@@ -24,7 +24,7 @@ function renderRoute(route: Route) {
     case 'habit-detail':
       return <HabitsPage />
     case 'stats':
-      return <PageHeader title="Estatísticas" />
+      return <StatsPage />
     case 'not-found':
       return (
         <EmptyState

@@ -1,0 +1,41 @@
+.heatmap {
+  position: relative;
+  margin: 0;
+}
+
+.heatmap__scroll {
+  position: relative;
+  overflow-x: auto;
+  padding-bottom: var(--space-2);
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+.heatmap__svg {
+  display: block;
+  max-width: none;
+}
+
+.heatmap__label {
+  fill: var(--text-subtle);
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.heatmap__legend {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  margin-top: var(--space-2);
+  color: var(--text-subtle);
+  font-size: 0.78rem;
+}
+
+.heatmap__legend span:first-child {
+  margin-right: 4px;
+}
+
+.heatmap__legend span:last-child {
+  margin-left: 4px;
+}
