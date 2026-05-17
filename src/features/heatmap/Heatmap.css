@@ -4,22 +4,80 @@
 }
 
 .heatmap__scroll {
-  position: relative;
   overflow-x: auto;
-  padding-bottom: var(--space-2);
+  overflow-y: hidden;
+  /* Room for focus rings and tooltips near the edges. */
+  padding: 4px 4px var(--space-2);
+  margin: -4px;
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
+}
+
+.heatmap__canvas {
+  position: relative;
 }
 
 .heatmap__svg {
   display: block;
   max-width: none;
+  overflow: visible;
 }
 
 .heatmap__label {
   fill: var(--text-subtle);
   font-size: 10px;
   font-weight: 600;
+}
+
+.heatmap__cell {
+  transition: fill-opacity 0.2s ease;
+  outline: none;
+}
+
+.heatmap__cell:hover {
+  stroke: var(--text);
+  stroke-opacity: 0.5;
+  stroke-width: 1;
+}
+
+.heatmap__cell:focus-visible {
+  stroke: var(--accent-strong);
+  stroke-width: 2;
+}
+
+.heatmap__cell[data-today] {
+  stroke: var(--text-muted);
+  stroke-width: 1;
+  stroke-dasharray: 2 2;
+}
+
+.heatmap__tooltip {
+  position: absolute;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg-elevated);
+  box-shadow: var(--shadow-lg);
+  font-size: 0.8rem;
+  line-height: 1.35;
+  pointer-events: none;
+}
+
+.heatmap__tooltip strong {
+  font-size: 0.86rem;
+}
+
+.heatmap__tooltip strong::first-letter,
+.heatmap__tooltip span::first-letter {
+  text-transform: uppercase;
+}
+
+.heatmap__tooltip span {
+  color: var(--text-muted);
 }
 
 .heatmap__legend {
@@ -32,10 +90,19 @@
   font-size: 0.78rem;
 }
 
-.heatmap__legend span:first-child {
+.heatmap__hint {
+  display: none;
+  margin-right: auto;
+}
+
+.heatmap:focus-within .heatmap__hint {
+  display: inline;
+}
+
+.heatmap__legend > span:nth-child(2) {
   margin-right: 4px;
 }
 
-.heatmap__legend span:last-child {
+.heatmap__legend > span:last-child {
   margin-left: 4px;
 }
