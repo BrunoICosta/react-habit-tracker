@@ -1,0 +1,230 @@
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.stat-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.stat-tile__icon {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  margin-bottom: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+}
+
+.stat-tile__value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.stat-tile__label {
+  font-weight: 650;
+  font-size: 0.9rem;
+}
+
+.stat-tile__hint {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (min-width: 720px) {
+  .stat-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.week-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.week-header .section__title {
+  margin-bottom: 0;
+}
+
+.week-header__range {
+  color: var(--text-muted);
+  font-size: 0.88rem;
+}
+
+.week-header__nav {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.week-header__nav .icon-button:disabled {
+  opacity: 0.4;
+}
+
+.week-chart {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: var(--space-2);
+  margin: var(--space-5) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.week-chart__day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.week-chart__value {
+  min-height: 1.2em;
+  color: var(--text-muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.week-chart__track {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  max-width: 40px;
+  height: 120px;
+}
+
+.week-chart__capacity {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  min-height: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--heat-empty);
+}
+
+.week-chart__bar {
+  width: 100%;
+  height: 100%;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  transform-origin: bottom;
+}
+
+.week-chart__bar[data-perfect] {
+  background: linear-gradient(180deg, var(--accent-strong), var(--accent));
+}
+
+.week-chart__label {
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  font-weight: 650;
+  text-transform: capitalize;
+}
+
+.week-chart__day[data-today] .week-chart__label {
+  color: var(--accent-strong);
+  font-weight: 800;
+}
+
+.week-chart__day[data-future] .week-chart__capacity {
+  opacity: 0.5;
+}
+
+.ranking {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ranking__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2);
+  margin: 0 calc(var(--space-2) * -1);
+  border-radius: var(--radius-md);
+  color: inherit;
+  text-decoration: none;
+}
+
+.ranking__link:hover {
+  background: var(--surface-2);
+}
+
+.ranking__emoji {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--habit-color) 22%, transparent);
+  font-size: 1.2rem;
+}
+
+.ranking__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.ranking__row {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.ranking__name {
+  overflow: hidden;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking__rate {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.ranking__bar {
+  display: block;
+  height: 6px;
+  overflow: hidden;
+  border-radius: var(--radius-pill);
+  background: var(--heat-empty);
+}
+
+.ranking__bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--habit-color);
+  transition: width 0.4s var(--ease-out);
+}
+
+.ranking__meta {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+}
