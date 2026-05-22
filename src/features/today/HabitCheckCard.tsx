@@ -75,7 +75,7 @@ export function HabitCheckCard({ habit, day, onChange }: HabitCheckCardProps) {
         transition={{ type: 'spring', stiffness: 220, damping: 30 }}
       />
 
-      <a className="check-card__body" href={routeToHash({ name: 'habit-edit', id: habit.id })}>
+      <a className="check-card__body" href={routeToHash({ name: 'habit-detail', id: habit.id })}>
         <span className="check-card__emoji" aria-hidden="true">
           {habit.emoji}
         </span>

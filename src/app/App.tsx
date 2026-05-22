@@ -1,4 +1,5 @@
 import { AnimatePresence, motion } from 'motion/react'
+import { HabitDetailPage } from '../features/habits/HabitDetailPage'
 import { EditHabitPage, NewHabitPage } from '../features/habits/HabitFormPage'
 import { HabitsPage } from '../features/habits/HabitsPage'
 import { SettingsPage } from '../features/settings/SettingsPage'
@@ -21,8 +22,9 @@ function renderRoute(route: Route) {
     case 'habit-edit':
       return <EditHabitPage id={route.id} />
     case 'habits':
-    case 'habit-detail':
       return <HabitsPage />
+    case 'habit-detail':
+      return <HabitDetailPage id={route.id} />
     case 'stats':
       return <StatsPage />
     case 'not-found':

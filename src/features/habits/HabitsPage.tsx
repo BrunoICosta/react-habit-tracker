@@ -26,7 +26,7 @@ function HabitRow({ habit, children }: { habit: Habit; children: ReactNode }) {
       className="habit-row"
       style={{ '--habit-color': habit.color }}
     >
-      <a className="habit-row__link" href={routeToHash({ name: 'habit-edit', id: habit.id })}>
+      <a className="habit-row__link" href={routeToHash({ name: 'habit-detail', id: habit.id })}>
         <span className="habit-row__emoji" aria-hidden="true">
           {habit.emoji}
         </span>
