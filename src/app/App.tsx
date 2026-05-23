@@ -8,6 +8,7 @@ import { TodayPage } from '../features/today/TodayPage'
 import { EmptyState } from '../shared/components/EmptyState'
 import { useTheme } from '../shared/hooks/useTheme'
 import { routeToHash, tabOf, useRoute, type Route } from './router'
+import { StatusToast } from './StatusToast'
 import { TabBar } from './TabBar'
 import './App.css'
 
@@ -74,6 +75,7 @@ export function App() {
           </motion.div>
         </AnimatePresence>
       </main>
+      <StatusToast />
     </div>
   )
 }
