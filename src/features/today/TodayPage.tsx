@@ -6,6 +6,7 @@ import { useShallow } from 'zustand/react/shallow'
 import { routeToHash } from '../../app/router'
 import { fromDateKey } from '../../core/dates'
 import { isDayDone, isScheduledOn } from '../../core/habit'
+import { createSampleData } from '../../core/sample'
 import { Confetti } from '../../shared/components/Confetti'
 import { EmptyState } from '../../shared/components/EmptyState'
 import { Icon } from '../../shared/components/Icon'
@@ -29,6 +30,8 @@ export function TodayPage() {
   const today = useToday()
   const habits = useHabitStore(useShallow(selectActiveHabits))
   const logs = useHabitStore((state) => state.logs)
+  const totalHabits = useHabitStore((state) => state.habits.length)
+  const replaceAll = useHabitStore((state) => state.replaceAll)
   const [burst, setBurst] = useState<{ key: number; particles: Particle[] } | null>(null)
 
   const scheduled = useMemo(
@@ -80,6 +83,16 @@ export function TodayPage() {
             <Icon name="plus" size={18} />
             Criar hábito
           </a>
+          {totalHabits === 0 && (
+            <button
+              type="button"
+              className="btn btn--ghost"
+              onClick={() => replaceAll(createSampleData(today))}
+            >
+              <Icon name="sparkles" size={18} />
+              Ver com dados de exemplo
+            </button>
+          )}
         </EmptyState>
       ) : (
         <>

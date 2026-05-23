@@ -1,6 +1,8 @@
 import { Icon, type IconName } from '../../shared/components/Icon'
 import { PageHeader } from '../../shared/components/PageHeader'
 import { useSettingsStore, type ThemePreference } from '../../store/settingsStore'
+import { DataSection } from './DataSection'
+import './SettingsPage.css'
 
 const THEME_OPTIONS: { value: ThemePreference; label: string; icon: IconName }[] = [
   { value: 'system', label: 'Sistema', icon: 'monitor' },
@@ -36,6 +38,8 @@ export function SettingsPage() {
           ))}
         </div>
       </section>
+
+      <DataSection />
     </>
   )
 }
