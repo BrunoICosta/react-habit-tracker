@@ -6,8 +6,9 @@ import { VitePWA } from 'vite-plugin-pwa'
 const PAGES_BASE = '/react-habit-tracker/'
 
 // https://vite.dev/config/
-export default defineConfig(({ command }) => {
-  const base = command === 'build' ? PAGES_BASE : '/'
+export default defineConfig(({ command, isPreview }) => {
+  // Dev server runs at the root; builds and `vite preview` use the GitHub Pages sub-path.
+  const base = command === 'build' || isPreview ? PAGES_BASE : '/'
 
   return {
     base,
