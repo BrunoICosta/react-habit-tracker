@@ -13,6 +13,7 @@ describe('App', () => {
     expect(nav).toBeInTheDocument()
     expect(screen.getByRole('link', { name: 'Hoje' })).toHaveAttribute('aria-current', 'page')
     expect(document.documentElement.dataset.theme).toBe('dark')
+    expect(document.title).toBe('Hoje · Hábitos')
   })
 
   it('renders the not found page for unknown hashes', () => {
