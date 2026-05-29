@@ -49,3 +49,9 @@
     padding-bottom: var(--space-8);
   }
 }
+
+@media (min-width: 1240px) {
+  .app-main[data-wide] {
+    max-width: 1000px;
+  }
+}

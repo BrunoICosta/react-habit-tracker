@@ -13,6 +13,9 @@ import { StatusToast } from './StatusToast'
 import { TabBar } from './TabBar'
 import './App.css'
 
+/** Pages with yearly heatmaps get more room on large screens so the full year fits. */
+const WIDE_ROUTES = new Set<Route['name']>(['stats', 'habit-detail'])
+
 function renderRoute(route: Route) {
   switch (route.name) {
     case 'settings':
@@ -80,7 +83,13 @@ export function App() {
           Pular para o conteúdo
         </a>
         <TabBar active={tabOf(route)} />
-        <main ref={mainRef} className="app-main" id="conteudo" tabIndex={-1}>
+        <main
+          ref={mainRef}
+          className="app-main"
+          id="conteudo"
+          tabIndex={-1}
+          data-wide={WIDE_ROUTES.has(route.name) || undefined}
+        >
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
               key={pageKey}
