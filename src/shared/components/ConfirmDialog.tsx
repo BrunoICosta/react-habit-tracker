@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useId, useRef, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
+import { useTranslation } from 'react-i18next'
 import './ConfirmDialog.css'
 
 interface ConfirmDialogProps {
@@ -20,11 +21,12 @@ export function ConfirmDialog({
   title,
   description,
   confirmLabel,
-  cancelLabel = 'Cancelar',
+  cancelLabel,
   tone = 'default',
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const { t } = useTranslation()
   const id = useId()
   const panelRef = useRef<HTMLDivElement>(null)
   const cancelRef = useRef<HTMLButtonElement>(null)
@@ -93,7 +95,7 @@ export function ConfirmDialog({
             )}
             <div className="dialog__actions">
               <button ref={cancelRef} type="button" className="btn btn--ghost" onClick={onCancel}>
-                {cancelLabel}
+                {cancelLabel ?? t('actions.cancel')}
               </button>
               <button
                 type="button"

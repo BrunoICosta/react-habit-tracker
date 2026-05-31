@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Icon } from '../shared/components/Icon'
 import { useOnlineStatus } from '../shared/hooks/useOnlineStatus'
 import { OFFLINE_READY_EVENT } from './pwaEvents'
@@ -9,6 +10,7 @@ const TOAST_DURATION_MS = 4000
 
 /** Connectivity and PWA notices. Data is local, so offline is informative, never an error. */
 export function StatusToast() {
+  const { t } = useTranslation()
   const online = useOnlineStatus()
   const [offlineReady, setOfflineReady] = useState(false)
 
@@ -25,11 +27,7 @@ export function StatusToast() {
     }
   }, [])
 
-  const message = !online
-    ? 'Você está offline. Tudo continua funcionando.'
-    : offlineReady
-      ? 'Pronto! O app agora funciona offline.'
-      : null
+  const message = !online ? t('status.offline') : offlineReady ? t('status.offlineReady') : null
 
   return (
     <div className="status-toast-region" role="status" aria-live="polite">

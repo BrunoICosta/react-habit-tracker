@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom/vitest'
 import { cleanup } from '@testing-library/react'
-import { afterEach, vi } from 'vitest'
+import { afterEach, beforeEach, vi } from 'vitest'
+import i18n from '../i18n'
 
 // jsdom does not implement matchMedia; default to a dark, motion-friendly environment.
 if (!window.matchMedia) {
@@ -18,6 +19,11 @@ if (!window.matchMedia) {
     })),
   })
 }
+
+// Tests assert pt-BR copy by default; English is covered explicitly in i18n tests.
+beforeEach(async () => {
+  await i18n.changeLanguage('pt-BR')
+})
 
 afterEach(() => {
   cleanup()

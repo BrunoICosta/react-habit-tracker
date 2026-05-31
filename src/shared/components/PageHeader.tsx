@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { Icon } from './Icon'
 import './PageHeader.css'
 
@@ -11,10 +12,11 @@ interface PageHeaderProps {
 }
 
 export function PageHeader({ title, subtitle, backHref, actions }: PageHeaderProps) {
+  const { t } = useTranslation()
   return (
     <header className="page-header">
       {backHref && (
-        <a className="icon-button" href={backHref} aria-label="Voltar">
+        <a className="icon-button" href={backHref} aria-label={t('actions.back')}>
           <Icon name="back" />
         </a>
       )}

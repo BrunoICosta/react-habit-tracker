@@ -72,19 +72,9 @@ export function tabOf(route: Route): TabName {
   }
 }
 
-const ROUTE_TITLES: Record<Route['name'], string> = {
-  today: 'Hoje',
-  habits: 'Hábitos',
-  'habit-new': 'Novo hábito',
-  'habit-detail': 'Detalhes do hábito',
-  'habit-edit': 'Editar hábito',
-  stats: 'Estatísticas',
-  settings: 'Ajustes',
-  'not-found': 'Página não encontrada',
-}
-
-export function titleOf(route: Route): string {
-  return ROUTE_TITLES[route.name]
+/** Translation key (namespace "common") of the page title for a route. */
+export function titleKeyOf(route: Route): `routes.${Route['name']}` {
+  return `routes.${route.name}`
 }
 
 export function navigate(route: Route, options: { replace?: boolean } = {}): void {

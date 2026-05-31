@@ -1,5 +1,6 @@
 import { AnimatePresence, MotionConfig, motion } from 'motion/react'
 import { useEffect, useRef } from 'react'
+import { useTranslation } from 'react-i18next'
 import { HabitDetailPage } from '../features/habits/HabitDetailPage'
 import { EditHabitPage, NewHabitPage } from '../features/habits/HabitFormPage'
 import { HabitsPage } from '../features/habits/HabitsPage'
@@ -8,13 +9,24 @@ import { StatsPage } from '../features/stats/StatsPage'
 import { TodayPage } from '../features/today/TodayPage'
 import { EmptyState } from '../shared/components/EmptyState'
 import { useTheme } from '../shared/hooks/useTheme'
-import { routeToHash, tabOf, titleOf, useRoute, type Route } from './router'
+import { routeToHash, tabOf, titleKeyOf, useRoute, type Route } from './router'
 import { StatusToast } from './StatusToast'
 import { TabBar } from './TabBar'
 import './App.css'
 
 /** Pages with yearly heatmaps get more room on large screens so the full year fits. */
 const WIDE_ROUTES = new Set<Route['name']>(['stats', 'habit-detail'])
+
+function NotFoundPage() {
+  const { t } = useTranslation()
+  return (
+    <EmptyState emoji="🧭" title={t('notFound.title')} description={t('notFound.description')}>
+      <a className="btn btn--primary" href={routeToHash({ name: 'today' })}>
+        {t('actions.goToToday')}
+      </a>
+    </EmptyState>
+  )
+}
 
 function renderRoute(route: Route) {
   switch (route.name) {
@@ -33,17 +45,7 @@ function renderRoute(route: Route) {
     case 'stats':
       return <StatsPage />
     case 'not-found':
-      return (
-        <EmptyState
-          emoji="🧭"
-          title="Página não encontrada"
-          description="Esse endereço não existe."
-        >
-          <a className="btn btn--primary" href={routeToHash({ name: 'today' })}>
-            Ir para Hoje
-          </a>
-        </EmptyState>
-      )
+      return <NotFoundPage />
   }
 }
 
@@ -51,13 +53,14 @@ export function App() {
   useTheme()
   const route = useRoute()
   const pageKey = routeToHash(route)
-  const title = titleOf(route)
+  const { t } = useTranslation()
+  const title = t(titleKeyOf(route))
   const mainRef = useRef<HTMLElement>(null)
   const firstRender = useRef(true)
 
   useEffect(() => {
-    document.title = `${title} · Hábitos`
-  }, [title])
+    document.title = `${title} · ${t('appName')}`
+  }, [title, t])
 
   // Move focus to the new page so screen readers announce navigation (skipped on first load).
   useEffect(() => {
@@ -80,7 +83,7 @@ export function App() {
             document.getElementById('conteudo')?.focus()
           }}
         >
-          Pular para o conteúdo
+          {t('skipToContent')}
         </a>
         <TabBar active={tabOf(route)} />
         <main

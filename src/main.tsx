@@ -4,6 +4,7 @@ import '@fontsource-variable/plus-jakarta-sans/wght.css'
 import './styles/tokens.css'
 import './styles/base.css'
 import './styles/components.css'
+import './i18n'
 import { App } from './app/App'
 import { registerServiceWorker } from './app/pwa'
 
