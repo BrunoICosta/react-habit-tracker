@@ -65,9 +65,9 @@ describe('buildHabitHeatmap', () => {
   it('labels months on their first Sunday column', () => {
     const data = buildHabitHeatmap(habit(), {}, END, 53)
     // Range starts on Sun 2025-05-18; June 1st 2025 is a Sunday, so the partial May is dropped.
-    expect(data.months[0]).toEqual({ label: 'Jun', column: 2 })
-    expect(data.months.find((month) => month.label === 'Jul')?.column).toBe(7)
-    expect(data.months.at(-1)?.label).toBe('Mai')
+    expect(data.months[0]).toEqual({ month: '2025-06', column: 2 })
+    expect(data.months.find((month) => month.month === '2025-07')?.column).toBe(7)
+    expect(data.months.at(-1)?.month).toBe('2026-05')
   })
 })
 

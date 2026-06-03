@@ -1,4 +1,5 @@
 import { useRef, useState, type ChangeEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
   backupFileName,
   createBackup,
@@ -10,7 +11,6 @@ import { createSampleData } from '../../core/sample'
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog'
 import { Icon } from '../../shared/components/Icon'
 import { downloadText } from '../../shared/lib/download'
-import { plural } from '../../shared/lib/plural'
 import { useToday } from '../../shared/hooks/useToday'
 import { useHabitStore } from '../../store/habitStore'
 
@@ -27,7 +27,9 @@ function countCheckIns(data: BackupData): number {
 }
 
 export function DataSection() {
+  const { t } = useTranslation(['settings', 'common'])
   const today = useToday()
+  const sample = () => createSampleData(today, t('sampleNames', { returnObjects: true }))
   const habits = useHabitStore((state) => state.habits)
   const logs = useHabitStore((state) => state.logs)
   const replaceAll = useHabitStore((state) => state.replaceAll)
@@ -38,7 +40,7 @@ export function DataSection() {
   const onExport = () => {
     const backup = createBackup({ habits, logs })
     downloadText(backupFileName(today), serializeBackup(backup))
-    setStatus({ tone: 'success', message: 'Backup exportado.' })
+    setStatus({ tone: 'success', message: t('data.exported') })
   }
 
   const onFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -47,14 +49,14 @@ export function DataSection() {
     if (!file) return
     const result = parseBackup(await file.text())
     if (!result.ok) {
-      setStatus({ tone: 'error', message: result.error })
+      setStatus({ tone: 'error', message: t(`data.errors.${result.error}`) })
       return
     }
     if (habits.length === 0) {
       replaceAll(result.data)
       setStatus({
         tone: 'success',
-        message: `${plural(result.data.habits.length, 'hábito importado', 'hábitos importados')}.`,
+        message: t('data.imported', { count: result.data.habits.length }),
       })
       return
     }
@@ -66,8 +68,8 @@ export function DataSection() {
       setPending({ kind: 'sample' })
       return
     }
-    replaceAll(createSampleData(today))
-    setStatus({ tone: 'success', message: 'Dados de exemplo carregados.' })
+    replaceAll(sample())
+    setStatus({ tone: 'success', message: t('data.sampleLoaded') })
   }
 
   const confirm = () => {
@@ -76,14 +78,14 @@ export function DataSection() {
       replaceAll(pending.data)
       setStatus({
         tone: 'success',
-        message: `${plural(pending.data.habits.length, 'hábito importado', 'hábitos importados')}.`,
+        message: t('data.imported', { count: pending.data.habits.length }),
       })
     } else if (pending.kind === 'sample') {
-      replaceAll(createSampleData(today))
-      setStatus({ tone: 'success', message: 'Dados de exemplo carregados.' })
+      replaceAll(sample())
+      setStatus({ tone: 'success', message: t('data.sampleLoaded') })
     } else {
       replaceAll({ habits: [], logs: {} })
-      setStatus({ tone: 'success', message: 'Todos os dados foram apagados.' })
+      setStatus({ tone: 'success', message: t('data.cleared') })
     }
     setPending(null)
   }
@@ -92,23 +94,27 @@ export function DataSection() {
     switch (pending?.kind) {
       case 'import':
         return {
-          title: 'Substituir seus dados?',
-          description: `"${pending.fileName}" tem ${plural(pending.data.habits.length, 'hábito', 'hábitos')} e ${plural(countCheckIns(pending.data), 'registro', 'registros')}. Seus dados atuais serão substituídos.`,
-          confirmLabel: 'Importar',
+          title: t('data.dialogs.importTitle'),
+          description: t('data.dialogs.importDescription', {
+            file: pending.fileName,
+            habits: t('common:units.habit', { count: pending.data.habits.length }),
+            checkIns: t('data.checkIn', { count: countCheckIns(pending.data) }),
+          }),
+          confirmLabel: t('data.dialogs.importConfirm'),
           tone: 'default' as const,
         }
       case 'sample':
         return {
-          title: 'Carregar dados de exemplo?',
-          description: 'Seus hábitos atuais serão substituídos por um conjunto de exemplo.',
-          confirmLabel: 'Carregar',
+          title: t('data.dialogs.sampleTitle'),
+          description: t('data.dialogs.sampleDescription'),
+          confirmLabel: t('data.dialogs.sampleConfirm'),
           tone: 'default' as const,
         }
       case 'clear':
         return {
-          title: 'Apagar todos os dados?',
-          description: 'Todos os hábitos e o histórico serão removidos deste dispositivo.',
-          confirmLabel: 'Apagar tudo',
+          title: t('data.dialogs.clearTitle'),
+          description: t('data.dialogs.clearDescription'),
+          confirmLabel: t('data.dialogs.clearConfirm'),
           tone: 'danger' as const,
         }
       default:
@@ -119,21 +125,18 @@ export function DataSection() {
   return (
     <section className="card section" aria-labelledby="data-title">
       <h2 id="data-title" className="section__title">
-        Seus dados
+        {t('data.title')}
       </h2>
-      <p className="section__hint">
-        Tudo fica salvo apenas neste dispositivo. Exporte um backup para não perder nada ou para
-        levar seus hábitos para outro aparelho.
-      </p>
+      <p className="section__hint">{t('data.hint')}</p>
 
       <div className="settings-actions">
         <button type="button" className="btn" onClick={onExport} disabled={habits.length === 0}>
           <Icon name="download" size={18} />
-          Exportar backup
+          {t('data.export')}
         </button>
         <button type="button" className="btn" onClick={() => fileRef.current?.click()}>
           <Icon name="upload" size={18} />
-          Importar backup
+          {t('data.import')}
         </button>
         <input
           ref={fileRef}
@@ -141,12 +144,12 @@ export function DataSection() {
           accept="application/json,.json"
           className="visually-hidden"
           tabIndex={-1}
-          aria-label="Arquivo de backup"
+          aria-label={t('data.file')}
           onChange={onFileChange}
         />
         <button type="button" className="btn btn--ghost" onClick={onSample}>
           <Icon name="sparkles" size={18} />
-          Carregar exemplo
+          {t('data.sample')}
         </button>
         <button
           type="button"
@@ -155,7 +158,7 @@ export function DataSection() {
           onClick={() => setPending({ kind: 'clear' })}
         >
           <Icon name="trash" size={18} />
-          Apagar tudo
+          {t('data.clear')}
         </button>
       </div>
 
@@ -167,7 +170,7 @@ export function DataSection() {
         open={dialog !== null}
         title={dialog?.title ?? ''}
         description={dialog?.description}
-        confirmLabel={dialog?.confirmLabel ?? 'Confirmar'}
+        confirmLabel={dialog?.confirmLabel ?? t('common:actions.confirm')}
         tone={dialog?.tone}
         onCancel={() => setPending(null)}
         onConfirm={confirm}

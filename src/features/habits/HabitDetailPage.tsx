@@ -1,25 +1,27 @@
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
 import { motion } from 'motion/react'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { navigate, routeToHash } from '../../app/router'
-import { fromDateKey, shiftDateKey } from '../../core/dates'
-import { describeFrequency, isDayDone, isScheduledOn } from '../../core/habit'
+import { shiftDateKey } from '../../core/dates'
+import { isDayDone, isScheduledOn, weekdayOf } from '../../core/habit'
 import { buildHabitHeatmap } from '../../core/heatmap'
-import { formatPercent, habitCompletionRate } from '../../core/stats'
+import { habitCompletionRate } from '../../core/stats'
 import { computeStreaks } from '../../core/streaks'
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog'
-import { EmptyState } from '../../shared/components/EmptyState'
 import { Icon } from '../../shared/components/Icon'
 import { PageHeader } from '../../shared/components/PageHeader'
 import { useToday } from '../../shared/hooks/useToday'
+import { useFormat } from '../../i18n/useFormat'
 import { useHabitStore } from '../../store/habitStore'
 import { Heatmap } from '../heatmap/Heatmap'
+import { HabitNotFound } from './HabitNotFound'
 import './HabitDetailPage.css'
 
 const RECENT_DAYS = 7
 
 export function HabitDetailPage({ id }: { id: string }) {
+  const { t } = useTranslation('habits')
+  const fmt = useFormat()
   const today = useToday()
   const habit = useHabitStore((state) => state.habits.find((item) => item.id === id))
   const log = useHabitStore((state) => state.logs[id])
@@ -40,36 +42,24 @@ export function HabitDetailPage({ id }: { id: string }) {
     }
   }, [habit, log, today])
 
-  if (!habit || !details) {
-    return (
-      <EmptyState
-        emoji="🔍"
-        title="Hábito não encontrado"
-        description="Ele pode ter sido excluído ou o link está incorreto."
-      >
-        <a className="btn btn--primary" href={routeToHash({ name: 'habits' })}>
-          Ver hábitos
-        </a>
-      </EmptyState>
-    )
-  }
+  if (!habit || !details) return <HabitNotFound />
 
   const recent = Array.from({ length: RECENT_DAYS }, (_, index) =>
     shiftDateKey(today, index - RECENT_DAYS + 1),
   )
-  const since = format(fromDateKey(habit.createdAt), "d 'de' MMMM 'de' yyyy", { locale: ptBR })
+  const since = fmt.date(habit.createdAt, 'date')
 
   return (
     <div style={{ '--habit-color': habit.color }}>
       <PageHeader
         title={habit.name}
-        subtitle={`${describeFrequency(habit.frequency)}${habit.target > 1 ? ` · ${habit.target}× por dia` : ''}`}
+        subtitle={`${fmt.frequency(habit.frequency)}${habit.target > 1 ? ` · ${fmt.perDay(habit.target)}` : ''}`}
         backHref={routeToHash({ name: 'habits' })}
         actions={
           <a
             className="icon-button"
             href={routeToHash({ name: 'habit-edit', id })}
-            aria-label={`Editar ${habit.name}`}
+            aria-label={t('detail.edit', { name: habit.name })}
           >
             <Icon name="edit" size={19} />
           </a>
@@ -88,25 +78,25 @@ export function HabitDetailPage({ id }: { id: string }) {
         </motion.span>
         <dl className="detail-stats">
           <div>
-            <dt>Sequência atual</dt>
+            <dt>{t('detail.currentStreak')}</dt>
             <dd>
               <Icon name="flame" size={18} />
               {details.streaks.current}
             </dd>
           </div>
           <div>
-            <dt>Melhor sequência</dt>
+            <dt>{t('detail.bestStreak')}</dt>
             <dd>
               <Icon name="trophy" size={18} />
               {details.streaks.best}
             </dd>
           </div>
           <div>
-            <dt>30 dias</dt>
-            <dd>{formatPercent(details.rate.rate)}</dd>
+            <dt>{t('detail.last30')}</dt>
+            <dd>{fmt.percent(details.rate.rate)}</dd>
           </div>
           <div>
-            <dt>Registros</dt>
+            <dt>{t('detail.checkIns')}</dt>
             <dd>{details.checkIns}</dd>
           </div>
         </dl>
@@ -115,30 +105,28 @@ export function HabitDetailPage({ id }: { id: string }) {
       {details.streaks.atRisk && (
         <p className="detail-alert" role="status">
           <Icon name="flame" size={18} />
-          Marque hoje para manter sua sequência de {details.streaks.current}{' '}
-          {details.streaks.current === 1 ? 'dia' : 'dias'}.
+          {t('detail.atRisk', { count: details.streaks.current })}
         </p>
       )}
 
       {habit.archived && (
         <p className="detail-alert detail-alert--muted" role="status">
           <Icon name="archive" size={18} />
-          Hábito arquivado. O histórico continua disponível.
+          {t('detail.archived')}
         </p>
       )}
 
       <section className="card section" aria-labelledby="recent-title">
         <h2 id="recent-title" className="section__title">
-          Últimos 7 dias
+          {t('detail.recentTitle')}
         </h2>
-        <p className="section__hint">Esqueceu de marcar? Toque em um dia para corrigir.</p>
+        <p className="section__hint">{t('detail.recentHint')}</p>
         <ul className="recent-days">
           {recent.map((day) => {
-            const date = fromDateKey(day)
             const count = log?.[day] ?? 0
             const done = isDayDone(count, habit.target)
             const scheduled = isScheduledOn(habit.frequency, day)
-            const fullDay = format(date, "EEEE, d 'de' MMMM", { locale: ptBR })
+            const fullDay = fmt.date(day, 'weekdayLong')
             return (
               <li key={day}>
                 <button
@@ -147,16 +135,14 @@ export function HabitDetailPage({ id }: { id: string }) {
                   aria-pressed={done}
                   data-scheduled={scheduled}
                   disabled={habit.archived}
-                  aria-label={`${fullDay}${scheduled ? '' : ' (fora da agenda)'}${
-                    habit.target > 1 ? `, ${count} de ${habit.target}` : ''
+                  aria-label={`${fullDay}${scheduled ? '' : t('detail.offSchedule')}${
+                    habit.target > 1 ? t('detail.progress', { count, target: habit.target }) : ''
                   }`}
                   onClick={() => toggle(habit.id, day)}
                 >
-                  <span className="recent-days__weekday">
-                    {format(date, 'EEEEEE', { locale: ptBR })}
-                  </span>
+                  <span className="recent-days__weekday">{fmt.weekday(weekdayOf(day))}</span>
                   <span className="recent-days__dot">
-                    {done ? <Icon name="check" size={16} /> : format(date, 'd')}
+                    {done ? <Icon name="check" size={16} /> : fmt.pattern(day, 'd')}
                   </span>
                 </button>
               </li>
@@ -167,14 +153,14 @@ export function HabitDetailPage({ id }: { id: string }) {
 
       <section className="card section" aria-labelledby="habit-heatmap-title">
         <h2 id="habit-heatmap-title" className="section__title">
-          Histórico
+          {t('detail.historyTitle')}
         </h2>
-        <p className="section__hint">Acompanhando desde {since}.</p>
+        <p className="section__hint">{t('detail.since', { date: since })}</p>
         <Heatmap
           data={details.heatmap}
           color={habit.color}
           variant="habit"
-          label={`Mapa de calor anual de ${habit.name}`}
+          label={t('detail.heatmapLabel', { name: habit.name })}
         />
       </section>
 
@@ -185,19 +171,19 @@ export function HabitDetailPage({ id }: { id: string }) {
           onClick={() => setArchived(habit.id, !habit.archived)}
         >
           <Icon name={habit.archived ? 'restore' : 'archive'} size={18} />
-          {habit.archived ? 'Restaurar' : 'Arquivar'}
+          {habit.archived ? t('list.restore') : t('list.archive')}
         </button>
         <button type="button" className="btn btn--danger" onClick={() => setConfirmDelete(true)}>
           <Icon name="trash" size={18} />
-          Excluir
+          {t('list.delete')}
         </button>
       </div>
 
       <ConfirmDialog
         open={confirmDelete}
-        title={`Excluir “${habit.name}”?`}
-        description="O hábito e todo o histórico dele serão apagados. Prefira arquivar se quiser manter os dados."
-        confirmLabel="Excluir"
+        title={t('deleteDialog.title', { name: habit.name })}
+        description={t('deleteDialog.descriptionArchiveHint')}
+        confirmLabel={t('deleteDialog.confirm')}
         tone="danger"
         onCancel={() => setConfirmDelete(false)}
         onConfirm={() => {

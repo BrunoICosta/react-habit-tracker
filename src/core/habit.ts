@@ -31,26 +31,6 @@ export const WEEKDAYS: readonly Weekday[] = [0, 1, 2, 3, 4, 5, 6]
 /** Display order starting on Monday, as is customary in Brazil. */
 export const WEEKDAYS_FROM_MONDAY: readonly Weekday[] = [1, 2, 3, 4, 5, 6, 0]
 
-export const WEEKDAY_SHORT_LABELS: Record<Weekday, string> = {
-  0: 'Dom',
-  1: 'Seg',
-  2: 'Ter',
-  3: 'Qua',
-  4: 'Qui',
-  5: 'Sex',
-  6: 'Sáb',
-}
-
-export const WEEKDAY_LONG_LABELS: Record<Weekday, string> = {
-  0: 'domingo',
-  1: 'segunda-feira',
-  2: 'terça-feira',
-  3: 'quarta-feira',
-  4: 'quinta-feira',
-  5: 'sexta-feira',
-  6: 'sábado',
-}
-
 export const MAX_TARGET = 20
 
 export function isWeekday(value: unknown): value is Weekday {
@@ -74,17 +54,24 @@ function sortedUniqueDays(days: readonly Weekday[]): Weekday[] {
   return [...new Set(days)].filter(isWeekday).sort((a, b) => a - b)
 }
 
-export function describeFrequency(frequency: Frequency): string {
-  if (frequency.kind === 'daily') return 'Todos os dias'
+export type FrequencyPattern = 'daily' | 'workdays' | 'weekends' | 'none' | 'custom'
+
+/** Classifies a frequency so the UI can pick a localized label ('Every day', 'Weekdays'...). */
+export function frequencyPattern(frequency: Frequency): FrequencyPattern {
+  if (frequency.kind === 'daily') return 'daily'
   const days = sortedUniqueDays(frequency.days)
   const signature = days.join(',')
-  if (days.length === 7) return 'Todos os dias'
-  if (days.length === 0) return 'Nenhum dia'
-  if (signature === '1,2,3,4,5') return 'Dias úteis'
-  if (signature === '0,6') return 'Fins de semana'
-  return WEEKDAYS_FROM_MONDAY.filter((day) => days.includes(day))
-    .map((day) => WEEKDAY_SHORT_LABELS[day])
-    .join(', ')
+  if (days.length === 7) return 'daily'
+  if (days.length === 0) return 'none'
+  if (signature === '1,2,3,4,5') return 'workdays'
+  if (signature === '0,6') return 'weekends'
+  return 'custom'
+}
+
+/** Scheduled weekdays in display order (Monday first). */
+export function scheduledDays(frequency: Frequency): Weekday[] {
+  if (frequency.kind === 'daily') return [...WEEKDAYS_FROM_MONDAY]
+  return WEEKDAYS_FROM_MONDAY.filter((day) => frequency.days.includes(day))
 }
 
 /** Dedupes and sorts days, collapsing "all seven days" into `daily`. */

@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { routeToHash } from '../../app/router'
 import type { DateKey } from '../../core/dates'
 import { isDayDone, type Habit } from '../../core/habit'
@@ -23,6 +24,7 @@ function vibrate() {
 }
 
 export function HabitCheckCard({ habit, day, onChange }: HabitCheckCardProps) {
+  const { t } = useTranslation('today')
   const log = useHabitStore((state) => state.logs[habit.id])
   const toggle = useHabitStore((state) => state.toggle)
   const increment = useHabitStore((state) => state.increment)
@@ -51,10 +53,10 @@ export function HabitCheckCard({ habit, day, onChange }: HabitCheckCardProps) {
   }
 
   const primaryLabel = done
-    ? `Desmarcar ${habit.name}`
+    ? t('card.uncheck', { name: habit.name })
     : multi
-      ? `Registrar ${habit.name} (${count} de ${habit.target})`
-      : `Marcar ${habit.name} como feito`
+      ? t('card.register', { name: habit.name, count, target: habit.target })
+      : t('card.check', { name: habit.name })
 
   return (
     <motion.li
@@ -90,10 +92,10 @@ export function HabitCheckCard({ habit, day, onChange }: HabitCheckCardProps) {
             {streak.current > 0 ? (
               <>
                 <Icon name="flame" size={14} />
-                {streak.current} {streak.current === 1 ? 'dia' : 'dias'}
+                {t('card.streakShort', { count: streak.current })}
               </>
             ) : (
-              !multi && 'Comece uma sequência hoje'
+              !multi && t('card.startStreak')
             )}
           </span>
         </span>
@@ -104,7 +106,7 @@ export function HabitCheckCard({ habit, day, onChange }: HabitCheckCardProps) {
           <motion.button
             type="button"
             className="check-card__undo"
-            aria-label={`Remover um registro de ${habit.name}`}
+            aria-label={t('card.undo', { name: habit.name })}
             onClick={onUndo}
             initial={{ opacity: 0, scale: 0.6 }}
             animate={{ opacity: 1, scale: 1 }}

@@ -1,12 +1,11 @@
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
 import { motion } from 'motion/react'
 import { useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { routeToHash } from '../../app/router'
-import { fromDateKey, shiftDateKey } from '../../core/dates'
+import { shiftDateKey } from '../../core/dates'
+import { weekdayOf } from '../../core/habit'
 import { buildOverallHeatmap } from '../../core/heatmap'
 import {
-  formatPercent,
   overallCompletionRate,
   perfectDays,
   rankHabits,
@@ -17,6 +16,7 @@ import { EmptyState } from '../../shared/components/EmptyState'
 import { Icon, type IconName } from '../../shared/components/Icon'
 import { PageHeader } from '../../shared/components/PageHeader'
 import { useToday } from '../../shared/hooks/useToday'
+import { useFormat } from '../../i18n/useFormat'
 import { useHabitStore } from '../../store/habitStore'
 import { Heatmap } from '../heatmap/Heatmap'
 import './StatsPage.css'
@@ -44,17 +44,9 @@ function StatTile({
   )
 }
 
-function formatWeekRange(monday: string): string {
-  const sunday = shiftDateKey(monday, 6)
-  const start = fromDateKey(monday)
-  const end = fromDateKey(sunday)
-  const sameMonth = start.getMonth() === end.getMonth()
-  return sameMonth
-    ? `${format(start, 'd')}–${format(end, "d 'de' MMM", { locale: ptBR })}`
-    : `${format(start, "d 'de' MMM", { locale: ptBR })} – ${format(end, "d 'de' MMM", { locale: ptBR })}`
-}
-
 export function StatsPage() {
+  const { t } = useTranslation(['stats', 'common'])
+  const fmt = useFormat()
   const today = useToday()
   const habits = useHabitStore((state) => state.habits)
   const logs = useHabitStore((state) => state.logs)
@@ -98,14 +90,10 @@ export function StatsPage() {
   if (habits.length === 0) {
     return (
       <>
-        <PageHeader title="Estatísticas" subtitle="Sua consistência ao longo do tempo" />
-        <EmptyState
-          emoji="📈"
-          title="Sem dados ainda"
-          description="As estatísticas aparecem assim que você criar e marcar seus hábitos."
-        >
+        <PageHeader title={t('title')} subtitle={t('subtitle')} />
+        <EmptyState emoji="📈" title={t('emptyTitle')} description={t('emptyDescription')}>
           <a className="btn btn--primary" href={routeToHash({ name: 'habit-new' })}>
-            Criar hábito
+            {t('common:actions.createHabit')}
           </a>
         </EmptyState>
       </>
@@ -116,32 +104,35 @@ export function StatsPage() {
 
   return (
     <>
-      <PageHeader title="Estatísticas" subtitle="Sua consistência ao longo do tempo" />
+      <PageHeader title={t('title')} subtitle={t('subtitle')} />
 
       <div className="stat-grid">
         <StatTile
           icon="calendar"
-          label={weekOffset === 0 ? 'Esta semana' : 'Semana selecionada'}
-          value={formatPercent(stats.weekRate.rate)}
-          hint={`${stats.weekRate.done} de ${stats.weekRate.scheduled} concluídos`}
+          label={weekOffset === 0 ? t('tiles.thisWeek') : t('tiles.selectedWeek')}
+          value={fmt.percent(stats.weekRate.rate)}
+          hint={t('tiles.weekHint', {
+            done: stats.weekRate.done,
+            scheduled: stats.weekRate.scheduled,
+          })}
         />
         <StatTile
           icon="target"
-          label="Últimos 30 dias"
-          value={formatPercent(stats.monthRate.rate)}
-          hint="Taxa de conclusão"
+          label={t('tiles.last30')}
+          value={fmt.percent(stats.monthRate.rate)}
+          hint={t('tiles.last30Hint')}
         />
         <StatTile
           icon="trophy"
-          label="Melhor sequência"
-          value={`${stats.bestStreak.value} ${stats.bestStreak.value === 1 ? 'dia' : 'dias'}`}
+          label={t('tiles.bestStreak')}
+          value={t('common:units.day', { count: stats.bestStreak.value })}
           hint={stats.bestStreak.name || undefined}
         />
         <StatTile
           icon="sparkles"
-          label="Dias perfeitos"
+          label={t('tiles.perfectDays')}
           value={String(stats.perfect)}
-          hint="Nos últimos 30 dias"
+          hint={t('tiles.perfectDaysHint')}
         />
       </div>
 
@@ -149,15 +140,17 @@ export function StatsPage() {
         <div className="week-header">
           <div>
             <h2 id="week-title" className="section__title">
-              Semana
+              {t('week.title')}
             </h2>
-            <p className="week-header__range">{formatWeekRange(selectedMonday)}</p>
+            <p className="week-header__range">
+              {fmt.range(selectedMonday, shiftDateKey(selectedMonday, 6))}
+            </p>
           </div>
           <div className="week-header__nav">
             <button
               type="button"
               className="icon-button"
-              aria-label="Semana anterior"
+              aria-label={t('week.previous')}
               onClick={() => setWeekOffset((value) => value - 1)}
             >
               <Icon name="back" size={18} />
@@ -165,7 +158,7 @@ export function StatsPage() {
             <button
               type="button"
               className="icon-button"
-              aria-label="Próxima semana"
+              aria-label={t('week.next')}
               disabled={weekOffset >= 0}
               onClick={() => setWeekOffset((value) => Math.min(0, value + 1))}
             >
@@ -174,15 +167,14 @@ export function StatsPage() {
           </div>
         </div>
 
-        <ol className="week-chart" aria-label="Hábitos concluídos por dia">
+        <ol className="week-chart" aria-label={t('week.chartLabel')}>
           {stats.week.map((day, index) => {
-            const date = fromDateKey(day.date)
-            const weekday = format(date, 'EEEEEE', { locale: ptBR })
-            const fullDay = format(date, "EEEE, d 'de' MMMM", { locale: ptBR })
+            const weekday = fmt.weekday(weekdayOf(day.date))
+            const fullDay = fmt.date(day.date, 'weekdayLong')
             const ratio = day.scheduled > 0 ? day.done / day.scheduled : 0
             const description = day.future
-              ? `${fullDay}: ainda não chegou`
-              : `${fullDay}: ${day.done} de ${day.scheduled} hábitos`
+              ? t('week.future', { day: fullDay })
+              : t('week.day', { day: fullDay, done: day.done, scheduled: day.scheduled })
             return (
               <li
                 key={day.date}
@@ -225,9 +217,9 @@ export function StatsPage() {
       {stats.ranking.length > 0 && (
         <section className="card section" aria-labelledby="ranking-title">
           <h2 id="ranking-title" className="section__title">
-            Por hábito
+            {t('ranking.title')}
           </h2>
-          <p className="section__hint">Taxa de conclusão nos últimos 30 dias.</p>
+          <p className="section__hint">{t('ranking.hint')}</p>
           <ul className="ranking">
             {stats.ranking.map(({ habit, rate, current }) => (
               <li key={habit.id} className="ranking__item" style={{ '--habit-color': habit.color }}>
@@ -241,12 +233,12 @@ export function StatsPage() {
                   <span className="ranking__body">
                     <span className="ranking__row">
                       <span className="ranking__name">{habit.name}</span>
-                      <span className="ranking__rate">{formatPercent(rate.rate)}</span>
+                      <span className="ranking__rate">{fmt.percent(rate.rate)}</span>
                     </span>
                     <span
                       className="ranking__bar"
                       role="progressbar"
-                      aria-label={`Conclusão de ${habit.name}`}
+                      aria-label={t('ranking.progressLabel', { name: habit.name })}
                       aria-valuemin={0}
                       aria-valuemax={100}
                       aria-valuenow={Math.round((rate.rate ?? 0) * 100)}
@@ -254,7 +246,7 @@ export function StatsPage() {
                       <span style={{ width: `${(rate.rate ?? 0) * 100}%` }} />
                     </span>
                     <span className="ranking__meta">
-                      {rate.done} de {rate.scheduled} dias · sequência atual: {current}
+                      {t('ranking.meta', { done: rate.done, scheduled: rate.scheduled, current })}
                     </span>
                   </span>
                 </a>
@@ -266,13 +258,13 @@ export function StatsPage() {
 
       <section className="card section" aria-labelledby="overall-heatmap-title">
         <h2 id="overall-heatmap-title" className="section__title">
-          Últimos 12 meses
+          {t('heatmap.title')}
         </h2>
         <Heatmap
           data={stats.heatmap}
           color="var(--accent)"
           variant="overall"
-          label="Mapa de calor anual de todos os hábitos"
+          label={t('heatmap.label')}
         />
       </section>
     </>

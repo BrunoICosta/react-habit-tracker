@@ -1,5 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { describeFrequency, isDayDone, isScheduledOn, normalizeFrequency, weekdayOf } from './habit'
+import {
+  frequencyPattern,
+  isDayDone,
+  isScheduledOn,
+  normalizeFrequency,
+  scheduledDays,
+  weekdayOf,
+} from './habit'
 
 describe('habit frequency', () => {
   it('resolves weekdays from date keys', () => {
@@ -13,11 +20,17 @@ describe('habit frequency', () => {
     expect(isScheduledOn({ kind: 'weekdays', days: [1, 3, 5] }, '2026-05-05')).toBe(false)
   })
 
-  it('describes frequencies in Portuguese', () => {
-    expect(describeFrequency({ kind: 'daily' })).toBe('Todos os dias')
-    expect(describeFrequency({ kind: 'weekdays', days: [1, 2, 3, 4, 5] })).toBe('Dias úteis')
-    expect(describeFrequency({ kind: 'weekdays', days: [6, 0] })).toBe('Fins de semana')
-    expect(describeFrequency({ kind: 'weekdays', days: [0, 3, 1] })).toBe('Seg, Qua, Dom')
+  it('classifies frequency patterns', () => {
+    expect(frequencyPattern({ kind: 'daily' })).toBe('daily')
+    expect(frequencyPattern({ kind: 'weekdays', days: [1, 2, 3, 4, 5] })).toBe('workdays')
+    expect(frequencyPattern({ kind: 'weekdays', days: [6, 0] })).toBe('weekends')
+    expect(frequencyPattern({ kind: 'weekdays', days: [] })).toBe('none')
+    expect(frequencyPattern({ kind: 'weekdays', days: [0, 3, 1] })).toBe('custom')
+  })
+
+  it('lists scheduled days starting on Monday', () => {
+    expect(scheduledDays({ kind: 'weekdays', days: [0, 3, 1] })).toEqual([1, 3, 0])
+    expect(scheduledDays({ kind: 'daily' })).toHaveLength(7)
   })
 
   it('normalizes frequencies', () => {

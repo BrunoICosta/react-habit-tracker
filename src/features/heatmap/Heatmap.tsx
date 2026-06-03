@@ -1,6 +1,8 @@
 import { useLayoutEffect, useRef, useState, type KeyboardEvent } from 'react'
+import { useTranslation } from 'react-i18next'
 import type { HeatCell, HeatLevel, HeatmapData } from '../../core/heatmap'
-import { describeCell, describeCellValue, formatCellDate } from './describeCell'
+import { useFormat } from '../../i18n/useFormat'
+import { describeCellValue, type HeatmapVariant } from './describeCell'
 import './Heatmap.css'
 
 const CELL = 13
@@ -11,11 +13,8 @@ const TOP = 20
 const TOOLTIP_WIDTH = 210
 
 const LEVEL_OPACITY: Record<HeatLevel, number> = { 0: 1, 1: 0.35, 2: 0.55, 3: 0.78, 4: 1 }
-const WEEKDAY_LABELS: [number, string][] = [
-  [1, 'Seg'],
-  [3, 'Qua'],
-  [5, 'Sex'],
-]
+/** Rows labelled on the left, like GitHub: Monday, Wednesday and Friday. */
+const LABELLED_ROWS = [1, 3, 5] as const
 const ROWS = [0, 1, 2, 3, 4, 5, 6]
 
 /** Arrow keys move by day (up/down) and by week (left/right), like the visual layout. */
@@ -33,7 +32,7 @@ interface HeatmapProps {
   color: string
   label: string
   /** "habit" describes check-ins, "overall" describes habits completed. */
-  variant: 'habit' | 'overall'
+  variant: HeatmapVariant
 }
 
 function cellFill(cell: HeatCell, color: string) {
@@ -42,6 +41,8 @@ function cellFill(cell: HeatCell, color: string) {
 }
 
 export function Heatmap({ data, color, label, variant }: HeatmapProps) {
+  const { t } = useTranslation('heatmap')
+  const fmt = useFormat()
   const scrollRef = useRef<HTMLDivElement>(null)
   const svgRef = useRef<SVGSVGElement>(null)
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
@@ -119,17 +120,17 @@ export function Heatmap({ data, color, label, variant }: HeatmapProps) {
             <g aria-hidden="true">
               {data.months.map((month) => (
                 <text
-                  key={`${month.label}-${month.column}`}
+                  key={`${month.month}-${month.column}`}
                   x={LEFT + month.column * STEP}
                   y={12}
                   className="heatmap__label"
                 >
-                  {month.label}
+                  {fmt.month(month.month)}
                 </text>
               ))}
-              {WEEKDAY_LABELS.map(([row, text]) => (
+              {LABELLED_ROWS.map((row) => (
                 <text key={row} x={0} y={TOP + row * STEP + CELL - 2} className="heatmap__label">
-                  {text}
+                  {fmt.weekday(row)}
                 </text>
               ))}
             </g>
@@ -144,7 +145,7 @@ export function Heatmap({ data, color, label, variant }: HeatmapProps) {
                       data-index={index}
                       role="gridcell"
                       aria-colindex={cell.column + 1}
-                      aria-label={describeCell(cell, variant)}
+                      aria-label={`${fmt.date(cell.date, 'full')}: ${describeCellValue(cell, variant, t)}`}
                       tabIndex={index === tabbable ? 0 : -1}
                       x={LEFT + cell.column * STEP}
                       y={TOP + cell.row * STEP}
@@ -170,15 +171,15 @@ export function Heatmap({ data, color, label, variant }: HeatmapProps) {
 
           {tooltipCell && (
             <div className="heatmap__tooltip" style={tooltipStyle} aria-hidden="true">
-              <strong>{describeCellValue(tooltipCell, variant)}</strong>
-              <span>{formatCellDate(tooltipCell)}</span>
+              <strong>{describeCellValue(tooltipCell, variant, t)}</strong>
+              <span>{fmt.date(tooltipCell.date, 'full')}</span>
             </div>
           )}
         </div>
       </div>
       <figcaption className="heatmap__legend">
-        <span className="heatmap__hint">Use as setas para navegar pelos dias</span>
-        <span>Menos</span>
+        <span className="heatmap__hint">{t('hint')}</span>
+        <span>{t('less')}</span>
         {([0, 1, 2, 3, 4] as const).map((level) => (
           <svg key={level} width={CELL} height={CELL} aria-hidden="true">
             <rect
@@ -190,7 +191,7 @@ export function Heatmap({ data, color, label, variant }: HeatmapProps) {
             />
           </svg>
         ))}
-        <span>Mais</span>
+        <span>{t('more')}</span>
       </figcaption>
     </figure>
   )

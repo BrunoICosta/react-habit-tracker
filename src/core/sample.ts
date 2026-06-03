@@ -13,7 +13,13 @@ function mulberry32(seed: number): () => number {
   }
 }
 
+export type SampleKey = 'water' | 'read' | 'workout' | 'meditate' | 'tidy'
+
+/** Optional translated names for the demo habits (defaults to pt-BR). */
+export type SampleNames = Partial<Record<SampleKey, string>>
+
 interface SampleHabit extends HabitDraft {
+  key: SampleKey
   /** Probability of completing a scheduled day. */
   consistency: number
   daysAgo: number
@@ -21,6 +27,7 @@ interface SampleHabit extends HabitDraft {
 
 const SAMPLES: SampleHabit[] = [
   {
+    key: 'water',
     name: 'Beber 2L de água',
     emoji: '💧',
     color: '#22b8cf',
@@ -30,6 +37,7 @@ const SAMPLES: SampleHabit[] = [
     daysAgo: 220,
   },
   {
+    key: 'read',
     name: 'Ler 10 páginas',
     emoji: '📚',
     color: '#8b7bff',
@@ -39,6 +47,7 @@ const SAMPLES: SampleHabit[] = [
     daysAgo: 300,
   },
   {
+    key: 'workout',
     name: 'Treinar',
     emoji: '💪',
     color: '#ff8a3d',
@@ -48,6 +57,7 @@ const SAMPLES: SampleHabit[] = [
     daysAgo: 160,
   },
   {
+    key: 'meditate',
     name: 'Meditar',
     emoji: '🧘',
     color: '#20c997',
@@ -57,6 +67,7 @@ const SAMPLES: SampleHabit[] = [
     daysAgo: 90,
   },
   {
+    key: 'tidy',
     name: 'Faxina rápida',
     emoji: '🧹',
     color: '#f5b82e',
@@ -67,14 +78,15 @@ const SAMPLES: SampleHabit[] = [
   },
 ]
 
-export function createSampleData(today: DateKey, seed = 42): BackupData {
+export function createSampleData(today: DateKey, names: SampleNames = {}, seed = 42): BackupData {
   const random = mulberry32(seed)
   const habits: Habit[] = []
   const logs: CompletionLog = {}
 
-  SAMPLES.forEach(({ consistency, daysAgo, ...draft }, index) => {
+  SAMPLES.forEach(({ key, consistency, daysAgo, ...draft }, index) => {
     const habit: Habit = {
       ...draft,
+      name: names[key] ?? draft.name,
       id: `sample-${index + 1}`,
       createdAt: shiftDateKey(today, -daysAgo),
       archived: false,

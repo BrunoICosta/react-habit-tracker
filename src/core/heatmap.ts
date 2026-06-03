@@ -1,5 +1,4 @@
-import { format, startOfWeek } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
+import { startOfWeek } from 'date-fns'
 import { fromDateKey, shiftDateKey, toDateKey, type DateKey } from './dates'
 import { isDayDone, isScheduledOn, type CompletionLog, type Habit, type HabitLog } from './habit'
 import { trackingStart } from './streaks'
@@ -24,7 +23,8 @@ export interface HeatCell {
 }
 
 export interface MonthLabel {
-  label: string
+  /** `yyyy-MM`; formatted by the UI with the active locale. */
+  month: string
   column: number
 }
 
@@ -53,11 +53,6 @@ export function heatmapRange(
   return { start: shiftDateKey(lastWeekStart, -7 * (weeks - 1)), end }
 }
 
-function monthName(date: DateKey): string {
-  const raw = format(fromDateKey(date), 'MMM', { locale: ptBR }).replace('.', '')
-  return raw.charAt(0).toUpperCase() + raw.slice(1)
-}
-
 /** GitHub-style labels: a month is labelled on the first column whose Sunday falls in it. */
 function monthLabels(cells: HeatCell[]): MonthLabel[] {
   const labels: MonthLabel[] = []
@@ -67,7 +62,7 @@ function monthLabels(cells: HeatCell[]): MonthLabel[] {
     const month = cell.date.slice(0, 7)
     if (month === previousMonth) continue
     previousMonth = month
-    labels.push({ label: monthName(cell.date), column: cell.column })
+    labels.push({ month, column: cell.column })
   }
   // Drop the partial first month when it would collide with the next label.
   const [first, second] = labels

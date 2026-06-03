@@ -105,5 +105,6 @@ describe('rankHabits', () => {
   it('formats percentages', () => {
     expect(formatPercent(0.666)).toBe('67%')
     expect(formatPercent(null)).toBe('—')
+    expect(formatPercent(0.5, 'en')).toBe('50%')
   })
 })

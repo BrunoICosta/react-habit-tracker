@@ -1,26 +1,28 @@
+import { useTranslation } from 'react-i18next'
 import { Icon, type IconName } from '../../shared/components/Icon'
 import { PageHeader } from '../../shared/components/PageHeader'
 import { useSettingsStore, type ThemePreference } from '../../store/settingsStore'
 import { DataSection } from './DataSection'
 import './SettingsPage.css'
 
-const THEME_OPTIONS: { value: ThemePreference; label: string; icon: IconName }[] = [
-  { value: 'system', label: 'Sistema', icon: 'monitor' },
-  { value: 'light', label: 'Claro', icon: 'sun' },
-  { value: 'dark', label: 'Escuro', icon: 'moon' },
+const THEME_OPTIONS: { value: ThemePreference; icon: IconName }[] = [
+  { value: 'system', icon: 'monitor' },
+  { value: 'light', icon: 'sun' },
+  { value: 'dark', icon: 'moon' },
 ]
 
 export function SettingsPage() {
+  const { t } = useTranslation('settings')
   const theme = useSettingsStore((state) => state.theme)
   const setTheme = useSettingsStore((state) => state.setTheme)
 
   return (
     <>
-      <PageHeader title="Ajustes" subtitle="Aparência e seus dados" />
+      <PageHeader title={t('title')} subtitle={t('subtitle')} />
 
       <section className="card" aria-labelledby="theme-title">
         <h2 id="theme-title" className="section__title">
-          Tema
+          {t('theme.title')}
         </h2>
         <div className="segmented" role="radiogroup" aria-labelledby="theme-title">
           {THEME_OPTIONS.map((option) => (
@@ -33,7 +35,7 @@ export function SettingsPage() {
               onClick={() => setTheme(option.value)}
             >
               <Icon name={option.icon} size={18} />
-              {option.label}
+              {t(`theme.${option.value}`)}
             </button>
           ))}
         </div>

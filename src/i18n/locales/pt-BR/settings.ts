@@ -1,0 +1,56 @@
+const settings = {
+  title: 'Ajustes',
+  subtitle: 'Aparência, idioma e seus dados',
+  theme: {
+    title: 'Tema',
+    system: 'Sistema',
+    light: 'Claro',
+    dark: 'Escuro',
+  },
+  data: {
+    title: 'Seus dados',
+    hint: 'Tudo fica salvo apenas neste dispositivo. Exporte um backup para não perder nada ou para levar seus hábitos para outro aparelho.',
+    export: 'Exportar backup',
+    import: 'Importar backup',
+    file: 'Arquivo de backup',
+    sample: 'Carregar exemplo',
+    clear: 'Apagar tudo',
+    exported: 'Backup exportado.',
+    imported_one: '{{count}} hábito importado.',
+    imported_other: '{{count}} hábitos importados.',
+    sampleLoaded: 'Dados de exemplo carregados.',
+    cleared: 'Todos os dados foram apagados.',
+    errors: {
+      invalidJson: 'O arquivo não é um JSON válido.',
+      notBackup: 'Esse arquivo não parece ser um backup do Hábitos.',
+      unsupportedVersion: 'Versão de backup não suportada.',
+      missingHabits: 'O backup não contém a lista de hábitos.',
+      invalidHabit: 'O backup contém um hábito inválido.',
+      duplicateHabit: 'O backup contém hábitos duplicados.',
+      corruptedLogs: 'O histórico do backup está corrompido.',
+    },
+    dialogs: {
+      importTitle: 'Substituir seus dados?',
+      importDescription:
+        '"{{file}}" tem {{habits}} e {{checkIns}}. Seus dados atuais serão substituídos.',
+      importConfirm: 'Importar',
+      sampleTitle: 'Carregar dados de exemplo?',
+      sampleDescription: 'Seus hábitos atuais serão substituídos por um conjunto de exemplo.',
+      sampleConfirm: 'Carregar',
+      clearTitle: 'Apagar todos os dados?',
+      clearDescription: 'Todos os hábitos e o histórico serão removidos deste dispositivo.',
+      clearConfirm: 'Apagar tudo',
+    },
+    checkIn_one: '{{count}} registro',
+    checkIn_other: '{{count}} registros',
+  },
+  sampleNames: {
+    water: 'Beber 2L de água',
+    read: 'Ler 10 páginas',
+    workout: 'Treinar',
+    meditate: 'Meditar',
+    tidy: 'Faxina rápida',
+  },
+}
+
+export default settings

@@ -16,7 +16,17 @@ export interface Backup extends BackupData {
   exportedAt: string
 }
 
-export type ParseResult = { ok: true; data: BackupData } | { ok: false; error: string }
+export type BackupError =
+  | 'invalidJson'
+  | 'notBackup'
+  | 'unsupportedVersion'
+  | 'missingHabits'
+  | 'invalidHabit'
+  | 'duplicateHabit'
+  | 'corruptedLogs'
+
+/** Errors are codes so the UI can translate them. */
+export type ParseResult = { ok: true; data: BackupData } | { ok: false; error: BackupError }
 
 export function createBackup(data: BackupData, now: Date = new Date()): Backup {
   return {
@@ -99,26 +109,26 @@ export function parseBackup(text: string): ParseResult {
   try {
     json = JSON.parse(text)
   } catch {
-    return { ok: false, error: 'O arquivo não é um JSON válido.' }
+    return { ok: false, error: 'invalidJson' }
   }
   if (!isRecord(json) || json.app !== BACKUP_APP) {
-    return { ok: false, error: 'Esse arquivo não parece ser um backup do Hábitos.' }
+    return { ok: false, error: 'notBackup' }
   }
   if (json.version !== BACKUP_VERSION) {
-    return { ok: false, error: 'Versão de backup não suportada.' }
+    return { ok: false, error: 'unsupportedVersion' }
   }
   if (!Array.isArray(json.habits)) {
-    return { ok: false, error: 'O backup não contém a lista de hábitos.' }
+    return { ok: false, error: 'missingHabits' }
   }
   const habits: Habit[] = []
   for (const item of json.habits) {
     const habit = parseHabit(item)
-    if (!habit) return { ok: false, error: 'O backup contém um hábito inválido.' }
+    if (!habit) return { ok: false, error: 'invalidHabit' }
     if (habits.some((existing) => existing.id === habit.id))
-      return { ok: false, error: 'O backup contém hábitos duplicados.' }
+      return { ok: false, error: 'duplicateHabit' }
     habits.push(habit)
   }
   const logs = parseLogs(json.logs ?? {}, habits)
-  if (!logs) return { ok: false, error: 'O histórico do backup está corrompido.' }
+  if (!logs) return { ok: false, error: 'corruptedLogs' }
   return { ok: true, data: { habits, logs } }
 }

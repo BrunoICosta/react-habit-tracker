@@ -149,6 +149,7 @@ export function rankHabits(
     .sort((a, b) => (b.rate.rate ?? -1) - (a.rate.rate ?? -1) || b.current - a.current)
 }
 
-export function formatPercent(rate: number | null): string {
-  return rate === null ? '—' : `${Math.round(rate * 100)}%`
+export function formatPercent(rate: number | null, locale = 'pt-BR'): string {
+  if (rate === null) return '—'
+  return new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(rate)
 }

@@ -46,6 +46,11 @@ const en: typeof common = {
     'pt-BR': 'Português',
     en: 'English',
   },
+  dates: {
+    weekdayLong: 'EEEE, MMMM d',
+    full: 'EEEE, MMMM d, yyyy',
+    date: 'MMMM d, yyyy',
+  },
   units: {
     day_one: '{{count}} day',
     day_other: '{{count}} days',

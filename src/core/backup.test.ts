@@ -36,11 +36,11 @@ describe('backup', () => {
   })
 
   it('rejects invalid files with friendly messages', () => {
-    expect(parseBackup('{oops')).toEqual({ ok: false, error: 'O arquivo não é um JSON válido.' })
+    expect(parseBackup('{oops')).toEqual({ ok: false, error: 'invalidJson' })
     expect(parseBackup('{"app":"other"}')).toMatchObject({ ok: false })
     expect(parseBackup('{"app":"habitos","version":99,"habits":[]}')).toEqual({
       ok: false,
-      error: 'Versão de backup não suportada.',
+      error: 'unsupportedVersion',
     })
   })
 
@@ -55,7 +55,7 @@ describe('backup', () => {
   ])('rejects habit with %o', (patch) => {
     expect(parseBackup(withHabit(patch))).toEqual({
       ok: false,
-      error: 'O backup contém um hábito inválido.',
+      error: 'invalidHabit',
     })
   })
 
@@ -68,7 +68,7 @@ describe('backup', () => {
     })
     expect(parseBackup(badLog)).toEqual({
       ok: false,
-      error: 'O histórico do backup está corrompido.',
+      error: 'corruptedLogs',
     })
     const duplicated = JSON.stringify({ app: 'habitos', version: 1, habits: [habit, habit] })
     expect(parseBackup(duplicated)).toMatchObject({ ok: false })

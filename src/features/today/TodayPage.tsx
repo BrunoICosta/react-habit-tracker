@@ -1,12 +1,11 @@
-import { format } from 'date-fns'
-import { ptBR } from 'date-fns/locale'
 import { AnimatePresence } from 'motion/react'
 import { useMemo, useState } from 'react'
+import { Trans, useTranslation } from 'react-i18next'
 import { useShallow } from 'zustand/react/shallow'
 import { routeToHash } from '../../app/router'
-import { fromDateKey } from '../../core/dates'
 import { isDayDone, isScheduledOn } from '../../core/habit'
 import { createSampleData } from '../../core/sample'
+import { useFormat } from '../../i18n/useFormat'
 import { Confetti } from '../../shared/components/Confetti'
 import { EmptyState } from '../../shared/components/EmptyState'
 import { Icon } from '../../shared/components/Icon'
@@ -18,15 +17,19 @@ import { selectActiveHabits, useHabitStore } from '../../store/habitStore'
 import { HabitCheckCard } from './HabitCheckCard'
 import './TodayPage.css'
 
-function progressMessage(done: number, total: number): string {
-  if (total === 0) return 'Nada programado para hoje.'
-  if (done === 0) return 'Bora começar? Um hábito de cada vez.'
-  if (done === total) return 'Tudo feito! Dia completo. 🎉'
-  if (done / total >= 0.5) return 'Mais da metade. Continue assim!'
-  return 'Bom começo, siga em frente.'
+type ProgressMessage = 'nothing' | 'start' | 'complete' | 'half' | 'progress'
+
+function progressMessage(done: number, total: number): ProgressMessage {
+  if (total === 0) return 'nothing'
+  if (done === 0) return 'start'
+  if (done === total) return 'complete'
+  if (done / total >= 0.5) return 'half'
+  return 'progress'
 }
 
 export function TodayPage() {
+  const { t } = useTranslation(['today', 'common', 'settings'])
+  const fmt = useFormat()
   const today = useToday()
   const habits = useHabitStore(useShallow(selectActiveHabits))
   const logs = useHabitStore((state) => state.logs)
@@ -54,19 +57,19 @@ export function TodayPage() {
     }
   }
 
-  const subtitle = format(fromDateKey(today), "EEEE, d 'de' MMMM", { locale: ptBR })
+  const subtitle = fmt.date(today, 'weekdayLong')
   const newHabitHref = routeToHash({ name: 'habit-new' })
 
   return (
     <>
       <PageHeader
-        title="Hoje"
+        title={t('title')}
         subtitle={subtitle}
         actions={
           <a
             className="icon-button icon-button--accent"
             href={newHabitHref}
-            aria-label="Novo hábito"
+            aria-label={t('common:actions.newHabit')}
           >
             <Icon name="plus" />
           </a>
@@ -74,23 +77,23 @@ export function TodayPage() {
       />
 
       {habits.length === 0 ? (
-        <EmptyState
-          emoji="✨"
-          title="Seu primeiro hábito"
-          description="Crie hábitos pequenos e marque aqui todos os dias. A consistência faz o resto."
-        >
+        <EmptyState emoji="✨" title={t('emptyTitle')} description={t('emptyDescription')}>
           <a className="btn btn--primary" href={newHabitHref}>
             <Icon name="plus" size={18} />
-            Criar hábito
+            {t('common:actions.createHabit')}
           </a>
           {totalHabits === 0 && (
             <button
               type="button"
               className="btn btn--ghost"
-              onClick={() => replaceAll(createSampleData(today))}
+              onClick={() =>
+                replaceAll(
+                  createSampleData(today, t('settings:sampleNames', { returnObjects: true })),
+                )
+              }
             >
               <Icon name="sparkles" size={18} />
-              Ver com dados de exemplo
+              {t('loadSample')}
             </button>
           )}
         </EmptyState>
@@ -99,28 +102,36 @@ export function TodayPage() {
           <section
             className="today-summary card"
             data-complete={total > 0 && doneCount === total}
-            aria-label="Progresso de hoje"
+            aria-label={t('summaryLabel')}
           >
             <Confetti burstKey={burst?.key ?? null} particles={burst?.particles ?? []} />
             <ProgressRing value={ratio} size={76} stroke={8}>
-              <span className="today-summary__percent">{Math.round(ratio * 100)}%</span>
+              <span className="today-summary__percent">{fmt.percent(ratio)}</span>
             </ProgressRing>
             <div>
               <p className="today-summary__count" aria-live="polite">
-                <strong>{doneCount}</strong> de {total} {total === 1 ? 'hábito' : 'hábitos'}
+                <Trans
+                  t={t}
+                  i18nKey="summaryCount"
+                  count={total}
+                  values={{ done: doneCount }}
+                  components={{ strong: <strong /> }}
+                />
               </p>
-              <p className="today-summary__message">{progressMessage(doneCount, total)}</p>
+              <p className="today-summary__message">
+                {t(`messages.${progressMessage(doneCount, total)}`)}
+              </p>
             </div>
           </section>
 
           {total === 0 ? (
             <EmptyState
               emoji="🌤️"
-              title="Dia livre"
-              description="Nenhum hábito está programado para hoje. Aproveite para descansar."
+              title={t('freeDayTitle')}
+              description={t('freeDayDescription')}
             />
           ) : (
-            <ul className="today-list" aria-label="Hábitos de hoje">
+            <ul className="today-list" aria-label={t('listLabel')}>
               <AnimatePresence initial={false}>
                 {scheduled.map((habit) => (
                   <HabitCheckCard
@@ -134,13 +145,7 @@ export function TodayPage() {
             </ul>
           )}
 
-          {offToday > 0 && (
-            <p className="today-off">
-              {offToday === 1
-                ? '1 hábito não está programado para hoje.'
-                : `${offToday} hábitos não estão programados para hoje.`}
-            </p>
-          )}
+          {offToday > 0 && <p className="today-off">{t('offToday', { count: offToday })}</p>}
         </>
       )}
     </>

@@ -44,6 +44,12 @@ const common = {
     'pt-BR': 'Português',
     en: 'English',
   },
+  /** date-fns patterns. */
+  dates: {
+    weekdayLong: "EEEE, d 'de' MMMM",
+    full: "EEEE, d 'de' MMMM 'de' yyyy",
+    date: "d 'de' MMMM 'de' yyyy",
+  },
   units: {
     day_one: '{{count}} dia',
     day_other: '{{count}} dias',

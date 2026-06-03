@@ -1,14 +1,8 @@
 import { useId, useRef, useState, type FormEvent } from 'react'
-import {
-  MAX_TARGET,
-  WEEKDAYS_FROM_MONDAY,
-  WEEKDAY_LONG_LABELS,
-  WEEKDAY_SHORT_LABELS,
-  describeFrequency,
-  type HabitDraft,
-  type Weekday,
-} from '../../core/habit'
+import { useTranslation } from 'react-i18next'
+import { MAX_TARGET, WEEKDAYS_FROM_MONDAY, type HabitDraft, type Weekday } from '../../core/habit'
 import { DEFAULT_COLOR, DEFAULT_EMOJI, HABIT_COLORS, HABIT_EMOJIS } from '../../core/palette'
+import { useFormat } from '../../i18n/useFormat'
 import { Icon } from '../../shared/components/Icon'
 import './HabitForm.css'
 
@@ -29,15 +23,15 @@ interface HabitFormProps {
   onCancel?: () => void
 }
 
-type Errors = Partial<Record<'name' | 'days', string>>
+type ErrorKey = 'nameRequired' | 'nameTooLong' | 'daysRequired'
+type Errors = Partial<Record<'name' | 'days', ErrorKey>>
 
 function validate(draft: HabitDraft): Errors {
   const errors: Errors = {}
-  if (!draft.name.trim()) errors.name = 'Dê um nome ao hábito.'
-  else if (draft.name.trim().length > NAME_MAX_LENGTH)
-    errors.name = `Use no máximo ${NAME_MAX_LENGTH} caracteres.`
+  if (!draft.name.trim()) errors.name = 'nameRequired'
+  else if (draft.name.trim().length > NAME_MAX_LENGTH) errors.name = 'nameTooLong'
   if (draft.frequency.kind === 'weekdays' && draft.frequency.days.length === 0)
-    errors.days = 'Escolha pelo menos um dia da semana.'
+    errors.days = 'daysRequired'
   return errors
 }
 
@@ -47,6 +41,8 @@ export function HabitForm({
   onSubmit,
   onCancel,
 }: HabitFormProps) {
+  const { t } = useTranslation(['habits', 'common'])
+  const fmt = useFormat()
   const id = useId()
   const nameRef = useRef<HTMLInputElement>(null)
   const daysRef = useRef<HTMLDivElement>(null)
@@ -91,17 +87,17 @@ export function HabitForm({
       >
         <span className="habit-form__preview-emoji">{draft.emoji}</span>
         <div>
-          <strong>{draft.name.trim() || 'Novo hábito'}</strong>
+          <strong>{draft.name.trim() || t('form.previewFallback')}</strong>
           <span>
-            {describeFrequency(draft.frequency)}
-            {draft.target > 1 && ` · ${draft.target}× por dia`}
+            {fmt.frequency(draft.frequency)}
+            {draft.target > 1 && ` · ${fmt.perDay(draft.target)}`}
           </span>
         </div>
       </div>
 
       <div className="field">
         <label className="field__label" htmlFor={`${id}-name`}>
-          Nome
+          {t('form.name')}
         </label>
         <input
           ref={nameRef}
@@ -109,7 +105,7 @@ export function HabitForm({
           className="field__input"
           value={draft.name}
           maxLength={NAME_MAX_LENGTH + 10}
-          placeholder="Ex.: Beber água, Ler 10 páginas"
+          placeholder={t('form.namePlaceholder')}
           autoComplete="off"
           aria-invalid={errors.name ? true : undefined}
           aria-describedby={errors.name ? `${id}-name-error` : undefined}
@@ -117,13 +113,13 @@ export function HabitForm({
         />
         {errors.name && (
           <p id={`${id}-name-error`} className="field__error" role="alert">
-            {errors.name}
+            {t(`form.errors.${errors.name}`, { max: NAME_MAX_LENGTH })}
           </p>
         )}
       </div>
 
       <fieldset className="field">
-        <legend className="field__label">Ícone</legend>
+        <legend className="field__label">{t('form.icon')}</legend>
         <div className="emoji-grid">
           {HABIT_EMOJIS.map((emoji) => (
             <label key={emoji} className="emoji-grid__item">
@@ -134,7 +130,7 @@ export function HabitForm({
                 checked={draft.emoji === emoji}
                 onChange={() => update({ emoji })}
                 className="visually-hidden"
-                aria-label={`Ícone ${emoji}`}
+                aria-label={t('form.iconOption', { emoji })}
               />
               <span aria-hidden="true">{emoji}</span>
             </label>
@@ -143,7 +139,7 @@ export function HabitForm({
       </fieldset>
 
       <fieldset className="field">
-        <legend className="field__label">Cor</legend>
+        <legend className="field__label">{t('form.color')}</legend>
         <div className="color-grid">
           {HABIT_COLORS.map((color) => (
             <label
@@ -158,7 +154,7 @@ export function HabitForm({
                 checked={draft.color === color.value}
                 onChange={() => update({ color: color.value })}
                 className="visually-hidden"
-                aria-label={color.label}
+                aria-label={t(`colors.${color.key}`)}
               />
               <Icon name="check" size={18} className="color-grid__check" />
             </label>
@@ -167,7 +163,7 @@ export function HabitForm({
       </fieldset>
 
       <fieldset className="field">
-        <legend className="field__label">Frequência</legend>
+        <legend className="field__label">{t('form.frequency')}</legend>
         <div className="segmented">
           <button
             type="button"
@@ -175,7 +171,7 @@ export function HabitForm({
             aria-pressed={draft.frequency.kind === 'daily'}
             onClick={() => update({ frequency: { kind: 'daily' } })}
           >
-            Todos os dias
+            {t('form.everyDay')}
           </button>
           <button
             type="button"
@@ -186,7 +182,7 @@ export function HabitForm({
               update({ frequency: { kind: 'weekdays', days: [1, 2, 3, 4, 5] } })
             }
           >
-            Dias específicos
+            {t('form.specificDays')}
           </button>
         </div>
 
@@ -195,7 +191,7 @@ export function HabitForm({
             ref={daysRef}
             className="weekday-picker"
             role="group"
-            aria-label="Dias da semana"
+            aria-label={t('form.weekdays')}
             aria-describedby={errors.days ? `${id}-days-error` : undefined}
           >
             {WEEKDAYS_FROM_MONDAY.map((day) => (
@@ -204,56 +200,56 @@ export function HabitForm({
                 type="button"
                 className="weekday-picker__day"
                 aria-pressed={selectedDays.includes(day)}
-                aria-label={WEEKDAY_LONG_LABELS[day]}
+                aria-label={fmt.weekdayLong(day)}
                 aria-invalid={errors.days ? true : undefined}
                 onClick={() => toggleDay(day)}
               >
-                {WEEKDAY_SHORT_LABELS[day].charAt(0)}
+                {fmt.weekday(day).charAt(0)}
               </button>
             ))}
           </div>
         )}
         {errors.days && (
           <p id={`${id}-days-error`} className="field__error" role="alert">
-            {errors.days}
+            {t(`form.errors.${errors.days}`)}
           </p>
         )}
       </fieldset>
 
       <div className="field">
         <span className="field__label" id={`${id}-target-label`}>
-          Meta diária
+          {t('form.target')}
         </span>
         <div className="stepper" role="group" aria-labelledby={`${id}-target-label`}>
           <button
             type="button"
             className="icon-button"
-            aria-label="Diminuir meta"
+            aria-label={t('form.decreaseTarget')}
             disabled={draft.target <= 1}
             onClick={() => update({ target: draft.target - 1 })}
           >
             <Icon name="minus" />
           </button>
           <output className="stepper__value" aria-live="polite">
-            {draft.target}× por dia
+            {fmt.perDay(draft.target)}
           </output>
           <button
             type="button"
             className="icon-button"
-            aria-label="Aumentar meta"
+            aria-label={t('form.increaseTarget')}
             disabled={draft.target >= MAX_TARGET}
             onClick={() => update({ target: draft.target + 1 })}
           >
             <Icon name="plus" />
           </button>
         </div>
-        <p className="field__hint">Quantas vezes por dia o hábito precisa ser feito para contar.</p>
+        <p className="field__hint">{t('form.targetHint')}</p>
       </div>
 
       <div className="habit-form__actions">
         {onCancel && (
           <button type="button" className="btn btn--ghost" onClick={onCancel}>
-            Cancelar
+            {t('common:actions.cancel')}
           </button>
         )}
         <button type="submit" className="btn btn--primary">

@@ -1,8 +1,10 @@
 import { AnimatePresence, motion } from 'motion/react'
 import { useMemo, useState, type ReactNode } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useShallow } from 'zustand/react/shallow'
 import { routeToHash } from '../../app/router'
-import { describeFrequency, type Habit } from '../../core/habit'
+import type { Habit } from '../../core/habit'
+import { useFormat } from '../../i18n/useFormat'
 import { computeStreaks } from '../../core/streaks'
 import { ConfirmDialog } from '../../shared/components/ConfirmDialog'
 import { EmptyState } from '../../shared/components/EmptyState'
@@ -13,6 +15,8 @@ import { selectActiveHabits, selectArchivedHabits, useHabitStore } from '../../s
 import './HabitsPage.css'
 
 function HabitRow({ habit, children }: { habit: Habit; children: ReactNode }) {
+  const { t } = useTranslation('habits')
+  const fmt = useFormat()
   const today = useToday()
   const log = useHabitStore((state) => state.logs[habit.id])
   const streak = useMemo(() => computeStreaks(habit, log ?? {}, today), [habit, log, today])
@@ -33,15 +37,15 @@ function HabitRow({ habit, children }: { habit: Habit; children: ReactNode }) {
         <span className="habit-row__text">
           <span className="habit-row__name">{habit.name}</span>
           <span className="habit-row__meta">
-            {describeFrequency(habit.frequency)}
-            {habit.target > 1 && ` · ${habit.target}× por dia`}
+            {fmt.frequency(habit.frequency)}
+            {habit.target > 1 && ` · ${fmt.perDay(habit.target)}`}
           </span>
         </span>
         {streak.current > 0 && (
-          <span className="habit-row__streak" title="Sequência atual">
+          <span className="habit-row__streak" title={t('list.streakTitle')}>
             <Icon name="flame" size={16} />
             {streak.current}
-            <span className="visually-hidden"> dias de sequência</span>
+            <span className="visually-hidden">{t('list.streakSr')}</span>
           </span>
         )}
       </a>
@@ -51,6 +55,7 @@ function HabitRow({ habit, children }: { habit: Habit; children: ReactNode }) {
 }
 
 export function HabitsPage() {
+  const { t } = useTranslation(['habits', 'common'])
   const active = useHabitStore(useShallow(selectActiveHabits))
   const archived = useHabitStore(useShallow(selectArchivedHabits))
   const setArchived = useHabitStore((state) => state.setArchived)
@@ -62,13 +67,13 @@ export function HabitsPage() {
   return (
     <>
       <PageHeader
-        title="Hábitos"
-        subtitle={active.length === 1 ? '1 hábito ativo' : `${active.length} hábitos ativos`}
+        title={t('common:routes.habits')}
+        subtitle={t('list.active', { count: active.length })}
         actions={
           <a
             className="icon-button icon-button--accent"
             href={newHabitHref}
-            aria-label="Novo hábito"
+            aria-label={t('common:actions.newHabit')}
           >
             <Icon name="plus" />
           </a>
@@ -78,24 +83,24 @@ export function HabitsPage() {
       {active.length === 0 ? (
         <EmptyState
           emoji="🌱"
-          title="Nenhum hábito ativo"
-          description="Crie um hábito para começar a acompanhar sua rotina."
+          title={t('list.emptyTitle')}
+          description={t('list.emptyDescription')}
         >
           <a className="btn btn--primary" href={newHabitHref}>
             <Icon name="plus" size={18} />
-            Criar hábito
+            {t('common:actions.createHabit')}
           </a>
         </EmptyState>
       ) : (
-        <ul className="habit-list" aria-label="Hábitos ativos">
+        <ul className="habit-list" aria-label={t('list.activeLabel')}>
           <AnimatePresence initial={false}>
             {active.map((habit) => (
               <HabitRow key={habit.id} habit={habit}>
                 <button
                   type="button"
                   className="icon-button"
-                  aria-label={`Arquivar ${habit.name}`}
-                  title="Arquivar"
+                  aria-label={t('list.archiveHabit', { name: habit.name })}
+                  title={t('list.archive')}
                   onClick={() => setArchived(habit.id, true)}
                 >
                   <Icon name="archive" size={19} />
@@ -109,11 +114,9 @@ export function HabitsPage() {
       {archived.length > 0 && (
         <section className="section" aria-labelledby="archived-title">
           <h2 id="archived-title" className="section__title">
-            Arquivados
+            {t('list.archivedTitle')}
           </h2>
-          <p className="section__hint">
-            Hábitos arquivados saem da tela Hoje, mas o histórico é mantido.
-          </p>
+          <p className="section__hint">{t('list.archivedHint')}</p>
           <ul className="habit-list habit-list--archived" aria-labelledby="archived-title">
             <AnimatePresence initial={false}>
               {archived.map((habit) => (
@@ -121,8 +124,8 @@ export function HabitsPage() {
                   <button
                     type="button"
                     className="icon-button"
-                    aria-label={`Restaurar ${habit.name}`}
-                    title="Restaurar"
+                    aria-label={t('list.restoreHabit', { name: habit.name })}
+                    title={t('list.restore')}
                     onClick={() => setArchived(habit.id, false)}
                   >
                     <Icon name="restore" size={19} />
@@ -130,8 +133,8 @@ export function HabitsPage() {
                   <button
                     type="button"
                     className="icon-button"
-                    aria-label={`Excluir ${habit.name}`}
-                    title="Excluir"
+                    aria-label={t('list.deleteHabit', { name: habit.name })}
+                    title={t('list.delete')}
                     onClick={() => setPendingDelete(habit)}
                   >
                     <Icon name="trash" size={19} />
@@ -145,9 +148,9 @@ export function HabitsPage() {
 
       <ConfirmDialog
         open={pendingDelete !== null}
-        title={`Excluir “${pendingDelete?.name ?? ''}”?`}
-        description="O hábito e todo o histórico dele serão apagados. Essa ação não pode ser desfeita."
-        confirmLabel="Excluir"
+        title={t('deleteDialog.title', { name: pendingDelete?.name ?? '' })}
+        description={t('deleteDialog.description')}
+        confirmLabel={t('deleteDialog.confirm')}
         tone="danger"
         onCancel={() => setPendingDelete(null)}
         onConfirm={() => {
