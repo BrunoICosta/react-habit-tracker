@@ -18,8 +18,13 @@ export function useFormat() {
   const { language, dateLocale } = useLocale()
 
   return useMemo(() => {
-    const weekday = (day: Weekday, width: 'abbreviated' | 'wide' = 'abbreviated') =>
-      capitalize(dateLocale.localize.day(day, { width }).replace('.', ''))
+    // Intl gives proper short names in both languages ("seg", "sáb" / "Mon", "Sat");
+    // date-fns pt-BR "abbreviated" names are full words. 2026-05-03 is a Sunday.
+    const weekdayShort = new Intl.DateTimeFormat(language, { weekday: 'short' })
+    const weekdayWide = new Intl.DateTimeFormat(language, { weekday: 'long' })
+    const sundayBased = (day: Weekday) => new Date(2026, 4, 3 + day)
+    const weekday = (day: Weekday) =>
+      capitalize(weekdayShort.format(sundayBased(day)).replace('.', ''))
 
     return {
       language,
@@ -36,7 +41,7 @@ export function useFormat() {
           format(fromDateKey(`${month}-01`), 'MMM', { locale: dateLocale }).replace('.', ''),
         ),
       weekday,
-      weekdayLong: (day: Weekday) => dateLocale.localize.day(day, { width: 'wide' }),
+      weekdayLong: (day: Weekday) => weekdayWide.format(sundayBased(day)),
       percent: (rate: number | null) => formatPercent(rate, language),
       /** "2–8 de nov." / "Nov 2 – 8", via Intl range formatting. */
       range: (start: DateKey, end: DateKey) =>

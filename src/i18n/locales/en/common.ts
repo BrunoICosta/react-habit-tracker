@@ -45,6 +45,7 @@ const en: typeof common = {
     label: 'Language',
     'pt-BR': 'Português',
     en: 'English',
+    switchTo: 'Switch to {{language}}',
   },
   dates: {
     weekdayLong: 'EEEE, MMMM d',

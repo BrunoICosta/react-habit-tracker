@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Icon } from './Icon'
+import { LanguageSwitcher } from './LanguageSwitcher'
 import './PageHeader.css'
 
 interface PageHeaderProps {
@@ -24,7 +25,10 @@ export function PageHeader({ title, subtitle, backHref, actions }: PageHeaderPro
         <h1 className="page-header__title">{title}</h1>
         {subtitle && <p className="page-header__subtitle">{subtitle}</p>}
       </div>
-      {actions && <div className="page-header__actions">{actions}</div>}
+      <div className="page-header__actions">
+        <LanguageSwitcher />
+        {actions}
+      </div>
     </header>
   )
 }

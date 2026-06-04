@@ -144,3 +144,7 @@
   color: var(--text);
   box-shadow: var(--shadow-sm);
 }
+
+.segmented__option svg {
+  flex-shrink: 0;
+}

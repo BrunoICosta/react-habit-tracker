@@ -43,6 +43,7 @@ const common = {
     label: 'Idioma',
     'pt-BR': 'Português',
     en: 'English',
+    switchTo: 'Mudar para {{language}}',
   },
   /** date-fns patterns. */
   dates: {

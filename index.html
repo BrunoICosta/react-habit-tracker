@@ -23,6 +23,9 @@
         var dark = window.matchMedia('(prefers-color-scheme: dark)').matches
         var theme = pref === 'system' ? (dark ? 'dark' : 'light') : pref
         document.documentElement.dataset.theme = theme
+        // Same for the language (i18next confirms it once the app boots).
+        var lang = localStorage.getItem('habitos:lang') || navigator.language || 'pt-BR'
+        document.documentElement.lang = /^pt/i.test(lang) ? 'pt-BR' : 'en'
       } catch (e) {
         document.documentElement.dataset.theme = 'dark'
       }
