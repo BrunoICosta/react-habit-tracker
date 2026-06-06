@@ -1,5 +1,7 @@
 # Hábitos — rastreador de hábitos (PWA)
 
+🇧🇷 Português · [🇺🇸 English](README.en.md)
+
 Aplicativo de hábitos instalável e 100% offline, feito com React 19, TypeScript e Vite. Você cria hábitos
 diários ou para dias específicos da semana, define uma meta por dia, marca o progresso na tela **Hoje** com
 animações e acompanha sua consistência com sequências (atual e melhor), estatísticas semanais e um mapa de
@@ -27,6 +29,8 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
 - **Backup:** exportar e importar JSON com validação completa do arquivo (nada de dados corrompidos no app).
 - **PWA:** manifest, ícones (incluindo maskable e Apple), service worker com precache e funcionamento
   offline. `scope` e `start_url` respeitam o caminho `/react-habit-tracker/` do GitHub Pages.
+- **Português (pt-BR) e inglês:** troca de idioma no cabeçalho e nos Ajustes, detecção automática do
+  idioma do navegador, datas, dias da semana e porcentagens formatados no idioma ativo.
 - **Tema claro/escuro/sistema**, sem flash na carga, e layout mobile-first que vira barra lateral no desktop.
 - **Acessibilidade:** link "pular para o conteúdo", foco gerenciado na navegação, títulos por página,
   diálogos com focus trap e Esc, `prefers-reduced-motion` respeitado em CSS e nas animações.
@@ -39,7 +43,8 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
 | Build       | Vite 7.3, @vitejs/plugin-react 5.2                                |
 | Animações   | Motion 12.38 (`motion/react`, sucessor do Framer Motion)          |
 | Estado      | Zustand 5.0 com middleware `persist` (localStorage)               |
-| Datas       | date-fns 4.1 (locale pt-BR)                                       |
+| Datas       | date-fns 4.1 (locales pt-BR e en-US) + `Intl`                     |
+| i18n        | i18next 26, react-i18next 17, i18next-browser-languagedetector 8  |
 | PWA         | vite-plugin-pwa 1.2 (Workbox), @vite-pwa/assets-generator 1.0     |
 | Testes      | Vitest 4.1, Testing Library (React 16.3, user-event 14), jsdom 29 |
 | Qualidade   | ESLint 10 + typescript-eslint, Prettier 3.8                       |
@@ -67,6 +72,34 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
 - **CSS com design tokens** (custom properties) por tema e CSS colocalizado por componente — simples, rápido e
   sem runtime.
 
+## Internacionalização
+
+O app está em **português (pt-BR, padrão)** e **inglês (en)**, com i18next + react-i18next.
+
+- **Detecção do idioma:** escolha salva (`localStorage`, chave `habitos:lang`) › idioma do navegador
+  (`pt*` vira pt-BR, qualquer outro vira en) › pt-BR. A troca acontece pelo botão de idioma no cabeçalho
+  (mostra o idioma atual, `PT`/`EN`) ou em **Ajustes › Idioma**, e atualiza `<html lang>` e o título da página.
+- **Traduções por namespace** em `src/i18n/locales/<idioma>/<namespace>.ts` (`common`, `today`,
+  `habits`, `stats`, `settings`, `heatmap`). Os arquivos em inglês são tipados com `typeof` do pt-BR, e
+  `CustomTypeOptions` (`src/types/i18next.d.ts`) tipa as chaves de `t()`: chave faltando ou errada quebra o build.
+- **Offline:** as traduções são módulos TypeScript empacotados no JS. O service worker faz precache delas
+  junto com o app, então os dois idiomas funcionam offline sem rotas extras.
+- **Formatação:** `useFormat()` (`src/i18n/useFormat.ts`) centraliza datas (padrões date-fns traduzidos e
+  locale `ptBR`/`enUS`), dias da semana e intervalos (`Intl.DateTimeFormat`) e porcentagens
+  (`Intl.NumberFormat`). O domínio (`src/core`) não tem textos: devolve códigos (padrão de frequência, erros
+  de backup, mês `yyyy-MM`) que a UI traduz.
+- **Plurais** usam os sufixos `_one`/`_other` do i18next (`Intl.PluralRules`).
+- **Dados do usuário** (nomes dos hábitos) não são traduzidos. Os dados de exemplo são criados no idioma ativo.
+
+**Como adicionar um idioma** (ex.: espanhol):
+
+1. Crie `src/i18n/locales/es/` copiando os arquivos de `en/` e traduza os valores (o TypeScript aponta
+   chaves faltando).
+2. Registre o idioma em `src/i18n/resources.ts` (`SUPPORTED_LANGUAGES` e `resources`).
+3. Ajuste `toSupportedLanguage` em `src/i18n/index.ts` para mapear `es*`, adicione o locale do date-fns
+   em `src/i18n/useLocale.ts` e um rótulo curto em `LanguageSwitcher`.
+4. Rode `npm test`: o teste de paridade confere se todos os idiomas têm as mesmas chaves.
+
 ## Como rodar
 
 Pré-requisito: Node 22+.
@@ -91,15 +124,17 @@ src/
 ├── app/            # shell: App, roteador por hash, barra de navegação, PWA e avisos
 ├── core/           # domínio puro + testes: datas, hábitos, sequências, estatísticas,
 │                   # mapa de calor, backup e dados de exemplo
+├── i18n/           # i18next, recursos pt-BR/en por namespace, useFormat e useLocale
 ├── features/
 │   ├── today/      # tela Hoje (check-off animado, metas, celebração)
 │   ├── habits/     # lista, formulário, detalhes do hábito
 │   ├── heatmap/    # componente SVG acessível do mapa de calor
 │   ├── stats/      # estatísticas e gráfico semanal
-│   └── settings/   # tema e backup/importação
+│   └── settings/   # tema, idioma e backup/importação
 ├── shared/         # componentes (ícones, diálogo, anel de progresso...), hooks e utilitários
 ├── store/          # stores Zustand (hábitos e preferências)
 ├── styles/         # tokens, base e primitivas de UI
+├── types/          # tipos globais (CSS custom properties, i18next)
 └── test/           # setup do Vitest
 ```
 
