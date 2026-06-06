@@ -15,6 +15,12 @@ export const SUPPORTED_LANGUAGES = ['pt-BR', 'en'] as const
 export type Language = (typeof SUPPORTED_LANGUAGES)[number]
 export const DEFAULT_LANGUAGE: Language = 'pt-BR'
 
+/** Each language is named in itself, so speakers recognize it whatever the UI language is. */
+export const LANGUAGE_NATIVE_NAMES: Record<Language, string> = {
+  'pt-BR': 'Português (Brasil)',
+  en: 'English',
+}
+
 /**
  * One namespace per feature. Resources are bundled TS modules (not fetched JSON): they ship inside
  * the precached JS, so every language works offline with no extra service worker routes, and the

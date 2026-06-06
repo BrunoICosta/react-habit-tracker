@@ -37,7 +37,8 @@ Actions and Pages.
 ## Internationalization
 
 - Language order: saved choice (`localStorage` key `habitos:lang`) › browser language (`pt*` → pt-BR,
-  anything else → en) › pt-BR. Switch it from the header button or **Settings › Language**; `<html lang>` and
+  anything else → en) › pt-BR. Switch it with the flag buttons (inline SVG, an accessible radio group) in the header or in
+  **Settings › Language**; `<html lang>` and
   the page title follow.
 - One namespace per feature in `src/i18n/locales/<lang>/<namespace>.ts`. English files are typed against
   pt-BR and `t()` keys are typed through `CustomTypeOptions`, so missing keys fail the build.
@@ -45,7 +46,7 @@ Actions and Pages.
 - `useFormat()` formats dates (translated date-fns patterns), weekdays and ranges (`Intl.DateTimeFormat`) and
   percentages (`Intl.NumberFormat`). The domain layer has no copy: it returns codes that the UI translates.
 - To add a language: copy `src/i18n/locales/en/`, translate it, register it in `src/i18n/resources.ts`, map
-  its tag in `toSupportedLanguage`, add its date-fns locale in `useLocale.ts` and run `npm test` (a parity test
+  its tag in `toSupportedLanguage`, add its date-fns locale in `useLocale.ts`, its native name and a flag in `Flag.tsx` and run `npm test` (a parity test
   checks that every language has the same keys).
 
 ## Running locally

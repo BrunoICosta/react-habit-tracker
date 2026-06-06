@@ -29,7 +29,7 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
 - **Backup:** exportar e importar JSON com validação completa do arquivo (nada de dados corrompidos no app).
 - **PWA:** manifest, ícones (incluindo maskable e Apple), service worker com precache e funcionamento
   offline. `scope` e `start_url` respeitam o caminho `/react-habit-tracker/` do GitHub Pages.
-- **Português (pt-BR) e inglês:** troca de idioma no cabeçalho e nos Ajustes, detecção automática do
+- **Português (pt-BR) e inglês:** troca de idioma por bandeiras no cabeçalho e nos Ajustes, detecção automática do
   idioma do navegador, datas, dias da semana e porcentagens formatados no idioma ativo.
 - **Tema claro/escuro/sistema**, sem flash na carga, e layout mobile-first que vira barra lateral no desktop.
 - **Acessibilidade:** link "pular para o conteúdo", foco gerenciado na navegação, títulos por página,
@@ -77,8 +77,8 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
 O app está em **português (pt-BR, padrão)** e **inglês (en)**, com i18next + react-i18next.
 
 - **Detecção do idioma:** escolha salva (`localStorage`, chave `habitos:lang`) › idioma do navegador
-  (`pt*` vira pt-BR, qualquer outro vira en) › pt-BR. A troca acontece pelo botão de idioma no cabeçalho
-  (mostra o idioma atual, `PT`/`EN`) ou em **Ajustes › Idioma**, e atualiza `<html lang>` e o título da página.
+  (`pt*` vira pt-BR, qualquer outro vira en) › pt-BR. A troca acontece pelas bandeiras no cabeçalho
+  (🇧🇷/🇺🇸 desenhadas em SVG, num `radiogroup` acessível com setas do teclado) ou em **Ajustes › Idioma**, e atualiza `<html lang>` e o título da página.
 - **Traduções por namespace** em `src/i18n/locales/<idioma>/<namespace>.ts` (`common`, `today`,
   `habits`, `stats`, `settings`, `heatmap`). Os arquivos em inglês são tipados com `typeof` do pt-BR, e
   `CustomTypeOptions` (`src/types/i18next.d.ts`) tipa as chaves de `t()`: chave faltando ou errada quebra o build.
@@ -97,7 +97,8 @@ O app está em **português (pt-BR, padrão)** e **inglês (en)**, com i18next +
    chaves faltando).
 2. Registre o idioma em `src/i18n/resources.ts` (`SUPPORTED_LANGUAGES` e `resources`).
 3. Ajuste `toSupportedLanguage` em `src/i18n/index.ts` para mapear `es*`, adicione o locale do date-fns
-   em `src/i18n/useLocale.ts` e um rótulo curto em `LanguageSwitcher`.
+   em `src/i18n/useLocale.ts`, o nome nativo em `LANGUAGE_NATIVE_NAMES` (`resources.ts`) e a bandeira em
+   `src/shared/components/Flag.tsx`.
 4. Rode `npm test`: o teste de paridade confere se todos os idiomas têm as mesmas chaves.
 
 ## Como rodar
