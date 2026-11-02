@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 
 /**
- * Tiny hash router. Hash URLs work on GitHub Pages without server rewrites and keep the
+ * Tiny hash router. Hash URLs work on any static host without server rewrites and keep the
  * PWA navigation fully offline, so a routing library would add weight without benefits here.
  */
 export type Route =

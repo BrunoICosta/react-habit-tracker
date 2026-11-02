@@ -2,13 +2,13 @@ import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 import { VitePWA } from 'vite-plugin-pwa'
 
-// Served from https://brunoicosta.github.io/react-habit-tracker/ in production.
-const PAGES_BASE = '/react-habit-tracker/'
+// Served from https://portfolio.brunoisaac.dev/react-habit-tracker/ in production.
+const DEPLOY_BASE = '/react-habit-tracker/'
 
 // https://vite.dev/config/
 export default defineConfig(({ command, isPreview }) => {
-  // Dev server runs at the root; builds and `vite preview` use the GitHub Pages sub-path.
-  const base = command === 'build' || isPreview ? PAGES_BASE : '/'
+  // Dev server runs at the root; builds and `vite preview` use the deployed sub-path.
+  const base = command === 'build' || isPreview ? DEPLOY_BASE : '/'
 
   return {
     base,

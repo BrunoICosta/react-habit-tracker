@@ -7,7 +7,7 @@ habits for specific weekdays, set a daily target, check them off on the **Today*
 animations and follow your consistency with streaks (current and best), weekly stats and a GitHub-style
 yearly heatmap. Data stays on your device, with JSON backups.
 
-**Live demo:** https://brunoicosta.github.io/react-habit-tracker/
+**Live demo:** https://portfolio.brunoisaac.dev/react-habit-tracker/
 
 ![Today screen in dark mode, with habits checked off and the daily progress ring](docs/screenshot.png)
 
@@ -25,14 +25,14 @@ yearly heatmap. Data stays on your device, with JSON backups.
 - **Stats:** weekly breakdown, 7/30-day completion rates, perfect days and a per-habit ranking.
 - **JSON backup** export/import with strict validation.
 - **PWA:** manifest, maskable/Apple icons, precaching service worker, works offline under the
-  `/react-habit-tracker/` GitHub Pages scope.
+  `/react-habit-tracker/` scope where the app is published.
 - **Portuguese (pt-BR) and English**, light/dark/system theme, mobile-first layout, reduced motion support.
 
 ## Stack
 
 React 19.2 · TypeScript 6.0 (strict) · Vite 7.3 · Motion 12 · Zustand 5 (persist) · date-fns 4 · i18next 26 and
 react-i18next 17 · vite-plugin-pwa 1.2 · Vitest 4 with Testing Library · ESLint 10 and Prettier 3 · GitHub
-Actions and Pages.
+Actions (CI) · Cloudflare Workers static assets.
 
 ## Internationalization
 
@@ -57,11 +57,18 @@ npm run dev       # http://localhost:5173
 npm test          # unit and component tests
 npm run lint
 npm run build     # production build with the /react-habit-tracker/ base
+npm run build:cf  # same build, used by the Cloudflare deploy (output in dist/)
 npm run preview   # http://localhost:4173/react-habit-tracker/
 ```
 
 The full documentation (architecture decisions, folder structure, next steps) is in the
 [Portuguese README](README.md).
+
+## Deploy
+
+Published on Cloudflare (Workers static assets) at https://portfolio.brunoisaac.dev/react-habit-tracker/ by the pipeline of the
+[portfolio](https://github.com/BrunoICosta/portfolio) repository, which runs `npm run build:cf` and serves
+`dist/` under `/react-habit-tracker/`. This repository only runs CI (lint, tests and build).
 
 ## Author
 

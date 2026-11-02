@@ -7,7 +7,7 @@ diários ou para dias específicos da semana, define uma meta por dia, marca o p
 animações e acompanha sua consistência com sequências (atual e melhor), estatísticas semanais e um mapa de
 calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com backup em JSON.
 
-**Demo:** https://brunoicosta.github.io/react-habit-tracker/
+**Demo:** https://portfolio.brunoisaac.dev/react-habit-tracker/
 
 ![Tela Hoje no tema escuro, com hábitos marcados e o anel de progresso do dia](docs/screenshot.png)
 
@@ -28,7 +28,7 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
 - **Correção de dias passados:** na página do hábito, os últimos 7 dias podem ser marcados/desmarcados.
 - **Backup:** exportar e importar JSON com validação completa do arquivo (nada de dados corrompidos no app).
 - **PWA:** manifest, ícones (incluindo maskable e Apple), service worker com precache e funcionamento
-  offline. `scope` e `start_url` respeitam o caminho `/react-habit-tracker/` do GitHub Pages.
+  offline. `scope` e `start_url` respeitam o caminho `/react-habit-tracker/` onde o app é publicado.
 - **Português (pt-BR) e inglês:** troca de idioma por bandeiras no cabeçalho e nos Ajustes, detecção automática do
   idioma do navegador, datas, dias da semana e porcentagens formatados no idioma ativo.
 - **Tema claro/escuro/sistema**, sem flash na carga, e layout mobile-first que vira barra lateral no desktop.
@@ -49,7 +49,7 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
 | Testes      | Vitest 4.1, Testing Library (React 16.3, user-event 14), jsdom 29 |
 | Qualidade   | ESLint 10 + typescript-eslint, Prettier 3.8                       |
 | Fonte       | Plus Jakarta Sans (Fontsource, empacotada para funcionar offline) |
-| CI / Deploy | GitHub Actions + GitHub Pages                                     |
+| CI / Deploy | GitHub Actions (CI) + Cloudflare Workers static assets            |
 
 ## Arquitetura e decisões
 
@@ -62,7 +62,7 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
   importado anterior à criação também é considerado.
 - **Zustand + persist** em vez de Context/Redux: pouco boilerplate, seletores granulares (re-render só do que
   muda) e persistência pronta. `useShallow` para listas derivadas.
-- **Roteador por hash próprio (~100 linhas).** Rotas em hash funcionam no GitHub Pages sem rewrites e
+- **Roteador por hash próprio (~100 linhas).** Rotas em hash funcionam em qualquer hospedagem estática sem rewrites e
   offline no service worker; uma biblioteca de roteamento não traria ganho aqui.
 - **Motion** para animações de layout, presença (entrada/saída de itens) e springs. O confete é gerado em
   handlers de evento (não em efeitos) para manter a renderização pura.
@@ -112,6 +112,7 @@ npm test             # testes (Vitest, uma execução)
 npm run test:watch   # testes em modo watch
 npm run lint         # ESLint
 npm run build        # type-check + build de produção (base /react-habit-tracker/)
+npm run build:cf     # mesmo build, usado pelo deploy na Cloudflare (saída em dist/)
 npm run preview      # serve o build em http://localhost:4173/react-habit-tracker/
 ```
 
@@ -146,6 +147,12 @@ src/
 - Reordenar hábitos com arrastar e soltar.
 - Hábitos com meta semanal ("3× por semana") além de dias fixos.
 - Testes end-to-end com Playwright cobrindo instalação e uso offline.
+
+## Deploy
+
+Publicado na Cloudflare (Workers static assets) em https://portfolio.brunoisaac.dev/react-habit-tracker/ pelo pipeline do
+repositório [portfolio](https://github.com/BrunoICosta/portfolio), que roda `npm run build:cf` e publica a
+pasta `dist/` em `/react-habit-tracker/`. Este repositório só roda a CI (lint, testes e build).
 
 ## Autor
 
