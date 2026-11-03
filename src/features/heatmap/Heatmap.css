@@ -82,6 +82,7 @@
 
 .heatmap__legend {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: 4px;
@@ -95,8 +96,11 @@
   margin-right: auto;
 }
 
-.heatmap:focus-within .heatmap__hint {
-  display: inline;
+/* Keyboard hint only where a keyboard is likely (not on touch screens). */
+@media (hover: hover) and (pointer: fine) {
+  .heatmap:focus-within .heatmap__hint {
+    display: inline;
+  }
 }
 
 .heatmap__legend > span:nth-child(2) {

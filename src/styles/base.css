@@ -48,6 +48,13 @@ textarea {
   color: inherit;
 }
 
+/* iOS Safari zooms into focused controls under 16px and never zooms back. */
+input,
+select,
+textarea {
+  font-size: max(16px, 1rem);
+}
+
 button {
   cursor: pointer;
 }

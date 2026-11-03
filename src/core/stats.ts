@@ -150,6 +150,6 @@ export function rankHabits(
 }
 
 export function formatPercent(rate: number | null, locale = 'pt-BR'): string {
-  if (rate === null) return '—'
+  if (rate === null) return '-'
   return new Intl.NumberFormat(locale, { style: 'percent', maximumFractionDigits: 0 }).format(rate)
 }

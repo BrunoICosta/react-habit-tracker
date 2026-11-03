@@ -48,6 +48,12 @@ export function Heatmap({ data, color, label, variant }: HeatmapProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null)
   const [hovered, setHovered] = useState<number | null>(null)
   const [focused, setFocused] = useState<number | null>(null)
+  // Visible window of the horizontal scroller, so tooltips never open off-screen on phones.
+  const [view, setView] = useState<{ left: number; width: number } | null>(null)
+  const syncView = () => {
+    const element = scrollRef.current
+    if (element) setView({ left: element.scrollLeft, width: element.clientWidth })
+  }
 
   const lastIndex = data.cells.length - 1
   // Roving tabindex: only one cell is tabbable; default to the most recent day.
@@ -89,7 +95,10 @@ export function Heatmap({ data, color, label, variant }: HeatmapProps) {
   const tooltipStyle = (() => {
     if (!tooltipCell) return undefined
     const cellX = LEFT + tooltipCell.column * STEP + CELL / 2
-    const left = Math.min(Math.max(cellX - TOOLTIP_WIDTH / 2, 0), width - TOOLTIP_WIDTH)
+    const minLeft = view ? view.left : 0
+    // The scroller has 4px padding on each side around the canvas.
+    const maxLeft = (view ? Math.min(width, view.left + view.width - 8) : width) - TOOLTIP_WIDTH
+    const left = Math.max(minLeft, Math.min(cellX - TOOLTIP_WIDTH / 2, maxLeft))
     const below = tooltipCell.row < 3
     const top = below ? TOP + (tooltipCell.row + 1) * STEP + 6 : TOP + tooltipCell.row * STEP - 8
     return {
@@ -102,7 +111,7 @@ export function Heatmap({ data, color, label, variant }: HeatmapProps) {
 
   return (
     <figure className="heatmap">
-      <div className="heatmap__scroll" ref={scrollRef}>
+      <div className="heatmap__scroll" ref={scrollRef} onScroll={syncView}>
         <div className="heatmap__canvas" style={{ width, height }}>
           <svg
             ref={svgRef}
@@ -156,8 +165,12 @@ export function Heatmap({ data, color, label, variant }: HeatmapProps) {
                       fillOpacity={opacity}
                       className="heatmap__cell"
                       data-today={index === lastIndex || undefined}
-                      onPointerEnter={() => setHovered(index)}
+                      onPointerEnter={() => {
+                        syncView()
+                        setHovered(index)
+                      }}
                       onFocus={() => {
+                        syncView()
                         setActiveIndex(index)
                         setFocused(index)
                       }}
