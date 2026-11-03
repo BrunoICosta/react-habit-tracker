@@ -1,4 +1,4 @@
-# Habits — habit tracker (PWA)
+# Habits | habit tracker (PWA)
 
 [🇧🇷 Português](README.md) · 🇺🇸 English
 
@@ -26,7 +26,7 @@ yearly heatmap. Data stays on your device, with JSON backups.
 - **JSON backup** export/import with strict validation.
 - **PWA:** manifest, maskable/Apple icons, precaching service worker, works offline under the
   `/react-habit-tracker/` scope where the app is published.
-- **Portuguese (pt-BR) and English**, light/dark/system theme, mobile-first layout, reduced motion support.
+- **Portuguese (pt-BR) and English**: light/dark/system theme, mobile-first layout, reduced motion support.
 
 ## Stack
 
@@ -72,4 +72,4 @@ Published on Cloudflare (Workers static assets) at https://portfolio.brunoisaac.
 
 ## Author
 
-Bruno Vinicius Isaac Costa — https://github.com/BrunoICosta · [MIT License](LICENSE)
+Bruno Vinicius Isaac Costa Â· https://github.com/BrunoICosta · [MIT License](LICENSE)

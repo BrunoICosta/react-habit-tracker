@@ -1,4 +1,4 @@
-# Hábitos — rastreador de hábitos (PWA)
+# Hábitos | rastreador de hábitos (PWA)
 
 🇧🇷 Português · [🇺🇸 English](README.en.md)
 
@@ -19,7 +19,7 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
   (ex.: beber água 4× por dia). Arquivar/restaurar sem perder histórico e excluir com confirmação.
 - **Hoje:** lista apenas o que está programado para o dia, botão de check com animação (traço do ✓, pulso e
   partículas), contador para metas maiores que 1, anel de progresso e confete ao completar o dia.
-- **Sequências:** sequência atual e melhor sequência respeitando a frequência — dias fora da agenda não
+- **Sequências:** sequência atual e melhor sequência respeitando a frequência, dias fora da agenda não
   quebram a sequência e o dia de hoje, ainda pendente, também não. Aviso quando a sequência está em risco.
 - **Mapa de calor anual (SVG):** por hábito e geral, com tooltips, navegação por teclado (setas, Home/End,
   PageUp/PageDown), roving tabindex e rótulos acessíveis para leitores de tela.
@@ -31,7 +31,7 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
   offline. `scope` e `start_url` respeitam o caminho `/react-habit-tracker/` onde o app é publicado.
 - **Português (pt-BR) e inglês:** troca de idioma por bandeiras no cabeçalho e nos Ajustes, detecção automática do
   idioma do navegador, datas, dias da semana e porcentagens formatados no idioma ativo.
-- **Tema claro/escuro/sistema**, sem flash na carga, e layout mobile-first que vira barra lateral no desktop.
+- **Tema claro/escuro/sistema**: sem flash na carga, e layout mobile-first que vira barra lateral no desktop.
 - **Acessibilidade:** link "pular para o conteúdo", foco gerenciado na navegação, títulos por página,
   diálogos com focus trap e Esc, `prefers-reduced-motion` respeitado em CSS e nas animações.
 
@@ -66,10 +66,10 @@ calor anual no estilo do GitHub. Os dados ficam só no seu dispositivo, com back
   offline no service worker; uma biblioteca de roteamento não traria ganho aqui.
 - **Motion** para animações de layout, presença (entrada/saída de itens) e springs. O confete é gerado em
   handlers de evento (não em efeitos) para manter a renderização pura.
-- **Mapa de calor em SVG manual**, sem biblioteca de gráficos: controle total de acessibilidade (grid ARIA,
+- **Mapa de calor em SVG manual**: sem biblioteca de gráficos: controle total de acessibilidade (grid ARIA,
   teclado, tooltips) e peso zero extra.
 - **Sem backend e sem chaves de API:** privacidade por padrão; o backup JSON cobre a portabilidade.
-- **CSS com design tokens** (custom properties) por tema e CSS colocalizado por componente — simples, rápido e
+- **CSS com design tokens** (custom properties) por tema e CSS colocalizado por componente, simples, rápido e
   sem runtime.
 
 ## Internacionalização
@@ -156,7 +156,7 @@ pasta `dist/` em `/react-habit-tracker/`. Este repositório só roda a CI (lint,
 
 ## Autor
 
-Bruno Vinicius Isaac Costa — https://github.com/BrunoICosta
+Bruno Vinicius Isaac Costa Â· https://github.com/BrunoICosta
 
 ## Licença
 

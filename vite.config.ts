@@ -20,7 +20,7 @@ export default defineConfig(({ command, isPreview }) => {
         includeAssets: ['favicon.svg', 'favicon.ico', 'apple-touch-icon-180x180.png'],
         manifest: {
           id: base,
-          name: 'Hábitos — rastreador de hábitos',
+          name: 'Hábitos | rastreador de hábitos',
           short_name: 'Hábitos',
           description:
             'Acompanhe seus hábitos diários com sequências, estatísticas e mapa de calor. Funciona offline.',
